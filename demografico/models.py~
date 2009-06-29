@@ -14,8 +14,8 @@ class Poblacion(models.Model):
 	rural_hombre = models.IntegerField(max_length=10)
 	rural_mujer = models.IntegerField(max_length=10)
 	class Meta:
-		ordering = ['ano']
-		verbose_name_plural = "Indicador de Poblacion"
+		ordering = ['finca']
+		verbose_name_plural = "Finca"
 
 	def __unicode__(self):
-		return self.ano
+		return self.finca
