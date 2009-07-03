@@ -1,7 +1,10 @@
 # Django settings for sissan project.
-
+import os
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+MEDIA_ROOT = PROJECT_DIR + '/media'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -9,10 +12,10 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+DATABASE_ENGINE = 'mysql'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'sissan'             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
+DATABASE_USER = 'root'             # Not used with sqlite3.
+DATABASE_PASSWORD = 'root'         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
@@ -25,7 +28,7 @@ TIME_ZONE = 'America/Chicago'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-ni'
 
 SITE_ID = 1
 
@@ -66,6 +69,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'sissan.urls'
 
 TEMPLATE_DIRS = (
+    PROJECT_DIR + '/templates'
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -76,4 +80,9 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.admin',
+    'django_evolution',
+    'demografico',
+    'lugar',
+    
 )
