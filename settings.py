@@ -84,5 +84,6 @@ INSTALLED_APPS = (
     'django_evolution',
     'demografico',
     'lugar',
+    'economico',
     
 )

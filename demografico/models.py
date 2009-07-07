@@ -1,4 +1,4 @@
- # -*- coding: UTF-8 -*-
+# -*- coding: UTF-8 -*-
 from django.db import models
 from lugar.models import Departamento
 
@@ -7,7 +7,7 @@ CHOICESANO = (
 )
 
 class Poblacion(models.Model):
-	ano = models.IntegerField("Ano",max_length=5, choices=CHOICESANO, help_text='Introduzca el ano')
+	ano = models.IntegerField("Año",max_length=5, choices=CHOICESANO, help_text='Introduzca el año')
         departamento = models.ForeignKey(Departamento,help_text='Introduzca nombre del departamento')
 	total_ambos_sexos = models.IntegerField("Total de ambos sexos",max_length=10)
 	total_hombre = models.IntegerField("Total hombres",max_length=10)
