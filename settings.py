@@ -92,4 +92,5 @@ INSTALLED_APPS = (
     'demografico',
     'lugar',
     'economico',
+    'socio_demografico',
 )
