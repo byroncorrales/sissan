@@ -2,12 +2,16 @@
 import os
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-MEDIA_ROOT = PROJECT_DIR + '/media'
+
+#def rel(*x):
+#         return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
+        
+
+#MEDIA_ROOT = PROJECT_DIR + '/media'
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+     ('Byron Corrales', 'byroncorrales@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -38,12 +42,14 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+#MEDIA_ROOT = rel('media')
+MEDIA_ROOT = PROJECT_DIR + '/media'
+
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -69,6 +75,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'sissan.urls'
 
 TEMPLATE_DIRS = (
+    #rel('templates')
     PROJECT_DIR + '/templates'
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
@@ -85,5 +92,4 @@ INSTALLED_APPS = (
     'demografico',
     'lugar',
     'economico',
-    
 )
