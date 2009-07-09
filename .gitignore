@@ -2,3 +2,4 @@
 #ignarar cualguir archivo que termine en pyc y pyo
 *.pyc
 *.pyo
+settings.py
