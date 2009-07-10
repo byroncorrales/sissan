@@ -18,10 +18,11 @@ class Poblacion(models.Model):
 	rural_ambos_sexos = models.IntegerField("Ambos sexos rural",max_length=10, editable=False)
 	rural_hombre = models.IntegerField("Hombre rural",max_length=10)
 	rural_mujer = models.IntegerField("Mujer rural",max_length=10)
-	class Meta:
+	
+        class Meta:
 		ordering = ['ano']
 		verbose_name_plural = "Indicador de Poblacion"
-        
+
         def save(self, force_insert=False, force_update=False):
                 self.rural_ambos_sexos = self.rural_hombre + self.rural_mujer
                 self.urbano_ambos_sexos = self.urbano_hombre + self.urbano_mujer
