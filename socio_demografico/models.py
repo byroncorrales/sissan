@@ -15,13 +15,17 @@ class Crecimiento(models.Model):
 
 class Esperanza(models.Model):
 	ano = models.CharField("Quinquenio", choices=CHOICESANO, max_length=12, help_text='Introduzca el quinquenio')
-        ambos_sexos = models.DecimalField("Total ambos sexos",max_digits=10,decimal_places=2)
-	mujer = models.DecimalField("Mujer, No hijos por mujer",max_digits=10,decimal_places=2)
+        ambos_sexos = models.DecimalField("Total ambos sexos",max_digits=10,decimal_places=2, editable=False)
+	mujer = models.DecimalField("Mujer",max_digits=10,decimal_places=2)
         hombre = models.DecimalField("Hombre",max_digits=10,decimal_places=2)
 	
 	class Meta:
 		ordering = ['ano']
 		verbose_name_plural = "Esperanza de vida"
+	
+	def save(self, force_insert=False, force_update=False):
+                self.ambos_sexos = self.hombre + self.mujer
+                super(Esperanza,self).save(force_insert, force_update)
 
 class Fecundidad(models.Model):
 	ano = models.CharField("Quinquenio", choices=CHOICESANO, max_length=12, help_text='Introduzca el quinquenio')

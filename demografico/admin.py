@@ -8,3 +8,5 @@ class PoblacionAdmin(admin.ModelAdmin):
 
 admin.site.register(Poblacion, PoblacionAdmin)
 
+
+
