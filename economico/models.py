@@ -11,9 +11,9 @@ CHOICESMES = (
 
 class Exportacion(models.Model):
 	ano = models.IntegerField("Ano",max_length=5, choices=CHOICESANO, help_text='Introduzca el ano')
-        mes = models.IntegerField("Mes",max_length=2, choices=CHOICESMES, help_text='Introduzca el mes')
+	mes = models.IntegerField("Mes",max_length=2, choices=CHOICESMES, help_text='Introduzca el mes')
 	fob = models.DecimalField("FOB",max_digits=10,decimal_places=2)
-        
+
 	class Meta:
 		ordering = ['ano']
 		verbose_name_plural = "Indicador de Exportaciones de Mercancias FOB"

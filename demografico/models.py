@@ -8,7 +8,7 @@ CHOICESANO = (
 
 class Poblacion(models.Model):
 	ano = models.IntegerField("Año",max_length=5, choices=CHOICESANO, help_text='Introduzca el año')
-        departamento = models.ForeignKey(Departamento,help_text='Introduzca nombre del departamento')
+	departamento = models.ForeignKey(Departamento,help_text='Introduzca nombre del departamento')
 	total_ambos_sexos = models.IntegerField("Total de ambos sexos",max_length=10, editable=False)
 	total_hombre = models.IntegerField("Total hombres",max_length=10, editable=False)
 	total_mujer = models.IntegerField("Total mujer",max_length=10, editable=False)
