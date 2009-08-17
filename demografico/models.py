@@ -2,9 +2,10 @@
 from django.db import models
 from lugar.models import Departamento
 import datetime
+from decimal import *
 
 CHOICESANO=[]
-for i in range (datetime.date.today().year,1959,-1):
+for i in range (datetime.date.today().year,1989,-1):
 	CHOICESANO.append((i,str(i)))
 	
 class Poblacion(models.Model):
@@ -20,18 +21,23 @@ class Poblacion(models.Model):
 	rural_hombre = models.IntegerField("Hombre rural",max_length=10)
 	rural_mujer = models.IntegerField("Mujer rural",max_length=10)
 	
-        class Meta:
+	class Meta:
 		ordering = ['ano']
 		verbose_name_plural = "Indicador de Poblacion"
 		unique_together = ['ano','departamento']
 
-        def save(self, force_insert=False, force_update=False):
-                self.rural_ambos_sexos = self.rural_hombre + self.rural_mujer
-                self.urbano_ambos_sexos = self.urbano_hombre + self.urbano_mujer
-                self.total_hombre = self.rural_hombre + self.urbano_hombre
-                self.total_mujer = self.rural_mujer + self.urbano_mujer
-                self.total_ambos_sexos = self.total_hombre + self.total_mujer
-                super(Poblacion,self).save(force_insert, force_update)
+	def save(self, force_insert=False, force_update=False):
+		self.rural_ambos_sexos = self.rural_hombre + self.rural_mujer
+		self.urbano_ambos_sexos = self.urbano_hombre + self.urbano_mujer
+		self.total_hombre = self.rural_hombre + self.urbano_hombre
+		self.total_mujer = self.rural_mujer + self.urbano_mujer
+		self.total_ambos_sexos = self.total_hombre + self.total_mujer
+		super(Poblacion,self).save(force_insert, force_update)
+
+	def densidad(self):
+		return "%.2f" % (self.total_ambos_sexos/self.departamento.extension)
+
+
 
 	
 
