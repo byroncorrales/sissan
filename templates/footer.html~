@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+
+       <!-- Comienza Footer-->
+        
+        <div id="footer">
+             Desarrollado por SIMAS, 2009 usando Django framework</div>
+        </div>
+        <!-- Termina Footer-->
+
+{% endblock %}

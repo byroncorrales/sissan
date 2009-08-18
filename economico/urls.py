@@ -8,4 +8,5 @@ from models import Exportacion
 
 urlpatterns = patterns('economico.views',
     (r'^economico/prueba/$', 'prueba'),
+
 )

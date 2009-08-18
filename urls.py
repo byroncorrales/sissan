@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
+    (r'^$', 'economico.views.index'),
     (r'', include('economico.urls')),
     (r'^admin/(.*)', admin.site.root),
 
@@ -26,4 +27,6 @@ if settings.DEBUG:
                 {'document_root': os_path.join(settings.MEDIA_ROOT + '/css')}),
             (r'^js/(.*)$', 'django.views.static.serve',
                 {'document_root': os_path.join(settings.MEDIA_ROOT + '/js')}),
+            (r'^imagen/(.*)$', 'django.views.static.serve',
+                {'document_root': os_path.join(settings.MEDIA_ROOT + '/imagen')}),
 )

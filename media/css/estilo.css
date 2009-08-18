@@ -1,0 +1,203 @@
+/* --------------Comienza Generales-------------- */
+
+body {
+  background-color: #454545;
+  background-image: url(../imagen/fondo.jpg);
+  background-repeat: repeat-x;
+  font-family: 'Trebuchet MS', Helvetica, sans-serif;
+  font-size:14px;
+}
+
+p {
+  text-align:justify;
+}
+
+a img{
+  border-style:none;
+}
+
+h1{
+  font-size:22px;
+  color:#fb8b00;
+  border-bottom-color:#fff46d;
+  border-bottom-style:solid;
+  border-bottom-width:1px;
+  background-color:#fefdd2;
+  padding-left:2px;
+}
+
+h2{
+  font-size:18px;
+  color:#4d4d4d;
+  font-weight:bold;
+}
+
+.izq{
+  float:left;
+}
+
+.der{
+  float:right;
+}
+
+.centro{
+  margin: 0pt auto;
+  padding:0pt;
+ 
+}
+/* --------------Termina Generales-------------- */
+
+/* --------------Contenedor que centra todo el sitio-------------- */
+#contenedor{
+  width:960px;
+  margin-top:-7px;
+}
+
+/* --------------Comienza Header-------------- */
+
+#header{
+  width:960px;
+  height:214px;
+background-image: url(../imagen/header.jpg);
+}
+
+#sesion{
+  width:960px;
+  height:45px;
+  text-align:right;
+  padding-right:10px;
+  padding-top:5px;
+}
+
+#sesion ul {  
+	list-style:none;
+	margin:0;
+	padding:0;
+	float:right;
+	}
+
+#sesion li {
+	margin-left:4px;
+	padding-left:8px;
+	padding-top:4px;
+	height:20px;
+	float:left;
+	background-image:url(../imagen/separador_menu.jpg);
+	background-repeat: no-repeat;
+	background-position:left;
+	}
+
+#sesion img{ float:left;margin-right:2px; }
+
+#sesion a{
+  color:#FFFFFF;
+  text-decoration:none;
+}
+#sesion a:hover{
+   text-decoration:underline;
+  color:#eeeeee
+  
+}
+
+#header_tab{
+  width:700px;
+  height:76px;
+}
+
+
+/* --------------Termina Header-------------- */
+
+
+
+#sombra{
+  margin-top:4px;
+  width:960px;
+  height:18px;
+  background-image: url(../imagen/sombraheader.jpg);
+  background-repeat: no-repeat;
+  padding-left:10px;
+}
+
+
+/* --------------Comienza contenido--------------- */
+#contenido{
+  width:956px;
+  !width:916px;
+  min-height:350px;
+  border-style:solid;
+  border-color:#1f1f1f;
+  border-width:2px;
+  border-bottom-width:2px;
+  border-top-width:0px;
+  background:#eeeeee;
+  color:#5d5d5d;
+ }
+
+#colum_izq{
+  width:640px;
+  margin-left:25px;
+}
+#colum_der{
+  width:250px;
+  height:100%;
+  margin-right:15px;
+  padding-left:10px;
+  padding-top:5px;
+
+
+}
+
+#colum_der img{
+  margin-bottom:3px;
+}
+
+.bloque{
+  background-image: url(../imagen/bloque.jpg);
+  width:250px;
+  height:160px;
+  margin-bottom:15px;
+}
+
+#separador{
+  clear:both;
+}
+
+/* --------------Esto no va por el momento-------------- */
+#contenido_inferior{
+  width:916px;
+  height:45px;
+  background-image: url(../imagen/contenido_inferior.jpg);
+  background-repeat: no-repeat;
+  
+}
+
+/* --------------Termina contenido-------------- */
+
+/* --------------Comienza footer-------------- */
+
+#footer{
+  margin-top:15px;
+  width:960px;
+  height:236px;
+  margin-bottom:-8px;
+  !margin-bottom:0px;
+}
+
+#simas{
+ width:200px;
+ !width:400px;
+ height:15px;
+ padding-left:635px;
+ !padding-left:550px;
+ padding-top:105px;
+ font-size:12px;
+ color:#3d3d3d;
+}
+
+#simas a{
+  color:#3d3d3d;
+  text-decoration:underline;
+  font-weight:bold;
+}
+
+/* Termina footer */
