@@ -19,7 +19,7 @@
 
 						  <tbody>
 {% for q in q %}
-							<tr class="alt">
+							<tr class="{% cycle alt,none %}">
 							  <td >{{ q.departamento.nombre}}</td>
 							  <td >{{ q.total_ambos_sexos}}</td>
 
@@ -39,4 +39,4 @@
             
 
         <!-- Termina Contenido-->
-{% endblock % }
+{% endblock %}

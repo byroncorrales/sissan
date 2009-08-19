@@ -106,6 +106,25 @@ h2 {
 	height:76px;
 }
 
+#enlace {
+	background-color: #454545;
+	color:#FFFFFF;
+	height:20px;
+	float:left;
+	margin-right:10px;
+	padding-left:5px;
+	padding-top:4px;
+	padding-right:5px;
+	border-left-width:1px;
+	border-left:solid;
+	border-left-color:#000000;
+}
+
+#enlace a {
+	color:#eeeeee;
+	text-decoration:none;
+}
+
 #sombra {
 	margin-top:4px;
 	width:960px;

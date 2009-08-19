@@ -1,80 +1,79 @@
 /* --------------Comienza Generales-------------- */
 
 body {
-  background-color: #454545;
-  background-image: url(../imagen/fondo.jpg);
-  background-repeat: repeat-x;
-  font-family: 'Trebuchet MS', Helvetica, sans-serif;
-  font-size:14px;
+	background-color: #454545;
+	background-image: url(../imagen/fondo.jpg);
+	background-repeat: repeat-x;
+	font-family: 'Trebuchet MS', Helvetica, sans-serif;
+	font-size:14px;
 }
 
 p {
-  text-align:justify;
+	text-align:justify;
 }
 
-a img{
-  border-style:none;
+a img {
+	border-style:none;
 }
 
-h1{
-  font-size:22px;
-  color:#fb8b00;
-  border-bottom-color:#fff46d;
-  border-bottom-style:solid;
-  border-bottom-width:1px;
-  background-color:#fefdd2;
-  padding-left:2px;
+h1 {
+	font-size:22px;
+	color:#fb8b00;
+	border-bottom-color:#fff46d;
+	border-bottom-style:solid;
+	border-bottom-width:1px;
+	background-color:#fefdd2;
+	padding-left:2px;
 }
 
-h2{
-  font-size:18px;
-  color:#4d4d4d;
-  font-weight:bold;
+h2 {
+	font-size:18px;
+	color:#4d4d4d;
+	font-weight:bold;
 }
 
-.izq{
-  float:left;
+.izq {
+	float:left;
 }
 
-.der{
-  float:right;
+.der {
+	float:right;
 }
 
-.centro{
-  margin: 0pt auto;
-  padding:0pt;
- 
+.centro {
+	margin: 0pt auto;
+	padding:0pt;
 }
 /* --------------Termina Generales-------------- */
 
 /* --------------Contenedor que centra todo el sitio-------------- */
-#contenedor{
-  width:960px;
-  margin-top:-7px;
+#contenedor {
+	width:960px;
+	margin-top:-7px;
 }
 
 /* --------------Comienza Header-------------- */
 
-#header{
-  width:960px;
-  height:214px;
-background-image: url(../imagen/header.jpg);
+#header {
+	width:960px;
+	height:214px;
+	background-image: url(../imagen/header.jpg);
 }
 
 #sesion{
-  width:960px;
-  height:45px;
-  text-align:right;
-  padding-right:10px;
-  padding-top:5px;
+	width:960px;
+	height:45px;
+	text-align:right;
+	padding-right:10px;
+	padding-top:5px;
 }
 
-#sesion ul {  
+#sesion ul {
 	list-style:none;
 	margin:0;
 	padding:0;
 	float:right;
-	}
+}
 
 #sesion li {
 	margin-left:4px;
@@ -87,36 +86,52 @@ background-image: url(../imagen/header.jpg);
 	background-position:left;
 	}
 
-#sesion img{ float:left;margin-right:2px; }
-
-#sesion a{
-  color:#FFFFFF;
-  text-decoration:none;
-}
-#sesion a:hover{
-   text-decoration:underline;
-  color:#eeeeee
-  
+#sesion img {
+	float:left;
+	margin-right:2px;
 }
 
-#header_tab{
-  width:700px;
-  height:76px;
+#sesion a {
+	color:#FFFFFF;
+	text-decoration:none;
 }
 
+#sesion a:hover {
+	text-decoration:underline;
+	color:#eeeeee
+}
+
+#header_tab {
+	width:700px;
+	height:76px;
+}
+
+#enlace {
+	background-color: #454545;
+	color:#FFFFFF;
+	height:20px;
+	float:left;
+	margin-right:10px;
+	padding-left:5px;
+	padding-top:4px;
+	padding-right:5px;
+}
+
+#enlace a {
+	color:#eeeeee;
+	text-decoration:none;
+}
+
+#sombra {
+	margin-top:4px;
+	width:960px;
+	height:18px;
+	background-image: url(../imagen/sombraheader.jpg);
+	background-repeat: no-repeat;
+	padding-left:10px;
+}
 
 /* --------------Termina Header-------------- */
-
-
-
-#sombra{
-  margin-top:4px;
-  width:960px;
-  height:18px;
-  background-image: url(../imagen/sombraheader.jpg);
-  background-repeat: no-repeat;
-  padding-left:10px;
-}
 
 
 /* --------------Comienza contenido--------------- */

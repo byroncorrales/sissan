@@ -13,13 +13,13 @@
 							  <th class="sortable-numeric">Departamento</th>
 							  <th class="sortable-numeric">Total</th>
 							  <th class="sortable-numeric">Total Urbano</th>
-							  <th class="sortable-date-dmy">Total Rural</th>
+							  <th class="sortable-numeric">Total Rural</th>
 							</tr>
 						  </thead>
 
 						  <tbody>
 {% for q in q %}
-							<tr class="alt">
+							<tr class="{% cycle alt,none %}">
 							  <td >{{ q.departamento.nombre}}</td>
 							  <td >{{ q.total_ambos_sexos}}</td>
 
