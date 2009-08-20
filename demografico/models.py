@@ -2,7 +2,6 @@
 from django.db import models
 from lugar.models import Departamento
 import datetime
-from decimal import *
 
 CHOICESANO=[]
 for i in range (datetime.date.today().year,1989,-1):

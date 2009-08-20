@@ -1,11 +1,23 @@
 {% extends 'base.html' %}
+{%block extrahead%}
+<script type="text/javascript" language="javascript" charset="utf-8">
+    // <![CDATA[
+    function hideExtraInfo() {
+        $("#esconder").hide("fast");
+    }
 
-{% block contenido %}
-
-<!-- Comienza Contenido-->
-            <div id="contenido">
-               <div id="colum_izq" class="izq">
-						{%block formulario %}
+    function showExtraInfo() {
+        $("#esconder").show("slow");
+    }
+    $(document).ready(function() {
+        hideExtraInfo();
+    });
+    // ]]>
+</script>
+{%endblock%}
+{%block formulario %} 
+					
+					<div id="esconder">
 						<form action="." method="GET" class="niceform" > 
 							<fieldset>
 							<legend>Consulta para indicador de poblacion</legend>
@@ -23,7 +35,7 @@
 								<dt><label for="dept_form">Departamento:</label></dt>
 								<dd><SELECT NAME="dept_form" SIZE=1 label="hola" >
 										<OPTION VALUE="" selectable="selectable">-------------</OPTION>
-										<OPTION VALUE="Nacional">Nacional</OPTION>
+										<OPTION VALUE="Nacional">Todo el Pais</OPTION>
 										{% for d in dept %}
 											<OPTION VALUE="{{d.pk|escape}}">{{d.nombre}}</OPTION>
 										{% endfor %}
@@ -41,14 +53,48 @@
 						</fieldset>
 						<fieldset class="action">
 							<input type="submit" value="Consultar" /> 
-						</fieldset
-						</form>
+						</fieldset>
+						</form><a href="javascript:hideExtraInfo()">Ocultar formulario</a>
+					</div>
 						{%endblock%}
-				      {% block resultado %}{% endblock %}	
+{% block resultado %}
+<hr>
+{%if q %}
+<table id="test1" cellpadding="0" cellspacing="0" border="0" class="rowstyle-alt colstyle-alt no-arrow ">
+						{%ifequal dept_salida "Nacional"%}
+						  <caption>Poblacion Nacional para el año {{ano_salida}}</caption>
+						{%endifequal%}
+							<caption>Poblacion por sexo y ubicacion de departamento {{dept_caption.nombre}} para el año {{ano_salida}}</caption>
+
+						  <thead>
+							<tr>
+							  <th class="sortable-numeric">Departamento</th>
+							  <th class="sortable-numeric">Total</th>
+							  <th class="sortable-numeric">Hombres</th>
+							  <th class="sortable-numeric">Mujeres</th>
+							</tr>
+						  </thead>
+
+						  <tbody>
+{% for q in q %}
+							<tr class="{% cycle alt,none %}">
+							  <td >{{ q.departamento.nombre}}</td>
+							  <td >{{ q.total_ambos_sexos}}</td>
+
+							  <td >{{ q.total_hombre}}</td>
+							  <td >{{ q.total_mujer}}</td>
+							</tr>
+				
+{% endfor %}
+						  </tbody>
+						</table> 
+{% else %}
+No hay datos para esta consulta
+{%endif%}	
 <br>
                </div>
                <div id="colum_der" class="der">
-                    <div class="bloque"></div>
+                    <div class="bloque"><p align="center"><a href="javascript:showExtraInfo()">Nueva Consulta</a></p></div>
                </div>
                <div id="separador" ></div>
             </div>
@@ -56,5 +102,4 @@
 
 
         <!-- Termina Contenido-->
-
 {% endblock %}
