@@ -87,10 +87,24 @@
 							  <td >{{ q.rural_hombre}}</td>
 							  <td >{{ q.rural_mujer}}</td>
 							</tr>
-				
+			
 {%empty%}
 No hay datos para esta consulta
 {% endfor %}
+
+  <tfoot>
+
+							<tr  class="{% cycle alt,none %}">
+							  <th ><b>Totales</b></td>
+
+							  <th ><b>{{ total.total_ambos_sexos__sum}}</b></td>
+
+							  <th ><b>{{ total.urbano_hombre__sum}}</b></td>
+							  <th ><b>{{ total.urbano_mujer__sum}}</b></td>
+							  <th ><b>{{ total.rural_hombre__sum}}</b></td>
+							  <th ><b>{{ total.rural_mujer__sum}}</b></td>
+							</tr>
+</tfoot>
 						  </tbody>
 						</table> 
 

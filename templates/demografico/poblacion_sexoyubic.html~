@@ -61,7 +61,7 @@
 <hr>
 <table id="test1" cellpadding="0" cellspacing="0" border="0" class="rowstyle-alt colstyle-alt no-arrow ">
 						{%ifequal dept_salida "Nacional"%}
-						  <caption>Poblacion Nacional para el año {{ano_salida}}</caption>
+						  <caption>Poblacion Nacional por sexo y ubicacion para el año {{ano_salida}}</caption>
 						{%endifequal%}
 							<caption>Poblacion por sexo y ubicacion del departamento {{dept_caption.nombre}} para el año {{ano_salida}}</caption>
 

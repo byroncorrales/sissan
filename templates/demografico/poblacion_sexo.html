@@ -86,6 +86,17 @@
 							</tr>
 				
 {% endfor %}
+  <tfoot>
+
+							<tr  class="{% cycle alt,none %}">
+							  <th ><b>Totales</b></td>
+
+							  <th ><b>{{ total.total_ambos_sexos__sum}}</b></td>
+
+							  <th ><b>{{ total.total_hombre__sum}}</b></td>
+							  <th ><b>{{ total.total_mujer__sum}}</b></td>
+							</tr>
+</tfoot>
 						  </tbody>
 						</table> 
 {% else %}
