@@ -175,6 +175,23 @@ h2 {
 	margin-bottom:15px;
 }
 
+#b_titulo{
+	font-size:20px;
+	padding-left:10px;
+	padding-top:3px;
+}
+
+#b_enlace{
+padding:15px;
+color:#D1CFCF;
+}
+
+#b_enlace a {
+	color:#D1CFCF;
+	text-decoration:none;
+}
+
+
 #separador {
 	clear:both;
 }

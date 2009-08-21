@@ -35,7 +35,7 @@
 								<dt><label for="dept_form">Departamento:</label></dt>
 								<dd><SELECT NAME="dept_form" SIZE=1 label="hola" >
 										<OPTION VALUE="" selectable="selectable">-------------</OPTION>
-										<OPTION VALUE="Nacional">Todo el Pais</OPTION>
+										<OPTION VALUE="Nacional">TODO EL PAIS</OPTION>
 										{% for d in dept %}
 											<OPTION VALUE="{{d.pk|escape}}">{{d.nombre}}</OPTION>
 										{% endfor %}
@@ -63,7 +63,7 @@
 						{%ifequal dept_salida "Nacional"%}
 						  <caption>Poblacion Nacional para el año {{ano_salida}}</caption>
 						{%endifequal%}
-							<caption>Poblacion por sexo y ubicacion de departamento {{dept_caption.nombre}} para el año {{ano_salida}}</caption>
+							<caption>Poblacion por sexo y ubicacion del departamento {{dept_caption.nombre}} para el año {{ano_salida}}</caption>
 
 						  <thead>
 							<tr>
@@ -98,7 +98,10 @@ No hay datos para esta consulta
 <br>
                </div>
                <div id="colum_der" class="der">
-                    <div class="bloque"><p align="center"><a href="javascript:showExtraInfo()">Nueva Consulta</a></p></div>
+						<div class="bloque">
+						<div id="b_titulo">Acciones</div>
+						<div id="b_enlace"><a href="javascript:showExtraInfo()">Nueva Consulta</a></div>
+						</div>
                </div>
                <div id="separador" ></div>
             </div>

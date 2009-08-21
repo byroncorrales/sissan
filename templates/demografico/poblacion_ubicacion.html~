@@ -64,6 +64,7 @@
 						{%ifequal dept_salida "Nacional"%}
 						  <caption>Poblacion Nacional para el año {{ano_salida}}</caption>
 						{%endifequal%}
+						<caption>Poblacion por  ubicacion del departamento {{dept_caption.nombre}} para el año {{ano_salida}}</caption>
 						  <thead>
 							<tr>
 							  <th class="sortable-numeric">Departamento</th>
@@ -92,7 +93,10 @@ No hay datos para esta consulta
 <br>
                </div>
                <div id="colum_der" class="der">
-                    <div class="bloque"><p align="center"><a href="javascript:showExtraInfo()">Nueva Consulta</a></p></div>
+						<div class="bloque">
+						<div id="b_titulo">Acciones</div>
+						<div id="b_enlace"><a href="javascript:showExtraInfo()">Nueva Consulta</a></div>
+						</div>
                </div>
                <div id="separador" ></div>
             </div>
