@@ -2,22 +2,15 @@
 
 {% block contenido %}
 
-<!-- Comienza Contenido-->
-            <div id="contenido">
-               <div id="colum_izq" class="izq">
+
+					{% block formulario %}
 <a href="/demografico/poblacion/consulta-ano">Consultar por un ano especifico</a>
-						{%endblock%}
+{% endblock %}	
 				      {% block resultado %}{% endblock %}	
-<br>
-               </div>
-               <div id="colum_der" class="der">
-                    <div class="bloque"></div>
-               </div>
-               <div id="separador" ></div>
-            </div>
-            
-
-
-        <!-- Termina Contenido-->
 
 {% endblock %}
+{% block columna_derecha %}{% endblock %}
+
+
+
+

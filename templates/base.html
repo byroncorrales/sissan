@@ -59,21 +59,24 @@
 		</div>
         <!-- Termina el header -->
 		{% endblock %}
-		 {% block contenido %}
+
 <!-- Comienza Contenido-->
             <div id="contenido">
                <div id="colum_izq" class="izq">
+		 {% block contenido %}
 				{% block formulario %}{% endblock %}
-				{% block resultado %}
+				{% block resultado %}{% endblock %}
                     <h2> Inicio del sistema</h2>
 
-	
+		{% endblock %}
                </div>
                <div id="colum_der" class="der">
+{% block columna_derecha %}
                     <div class="bloque">
 						<div id="b_titulo">Titulo</div>
 						<div id="b_enlace">Enlace</div>
 					</div>
+{% endblock %}
                </div>
                <div id="separador" ></div>
             </div>
@@ -81,8 +84,8 @@
 
         <!-- Termina Contenido-->
 
-			{% endblock %}
-		{% endblock %}
+
+
 		 {% block footer %}
 
        <!-- Comienza Footer-->

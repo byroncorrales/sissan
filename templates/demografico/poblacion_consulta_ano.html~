@@ -1,11 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'demografico/poblacion.html' %}
 
-{% block contenido %}
 
-<!-- Comienza Contenido-->
-            <div id="contenido">
-               <div id="colum_izq" class="izq">
 						{%block formulario %}
+						<div id="esconder">
 						<form action="." method="GET" class="niceform" > 
 							<fieldset>
 							<legend>Consulta para indicador de poblacion</legend>
@@ -41,17 +38,12 @@
 						</fieldset>
 						<fieldset class="action">
 							<input type="submit" value="Consultar" /> 
-						</fieldset
+						</fieldset>
 						</form>
+{% if q %}<a href="javascript:hideExtraInfo()">Esconder formulario</a>{%endif%}
+</div>
+
 						{%endblock%}
-				      {% block resultado %}{% endblock %}	
-<br>
-               </div>
-               <div id="colum_der" class="der">
-                    <div class="bloque"></div>
-               </div>
-               <div id="separador" ></div>
-            </div>
-            
+
 
 
