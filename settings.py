@@ -55,8 +55,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django_evolution',
-    #'demografico',
+    'demografico',
     'lugar',
-    #'economico',
-    #'socio_demografico',
+    'economico',
+    'seguridad_alimentaria',
 )
