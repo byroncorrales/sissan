@@ -104,3 +104,37 @@ class Mercado(models.Model):
     class Meta:
         unique_together = ['ano', 'nombre']
         ordering = ['nombre']
+
+class FuerzaTrabajo(models.Model):
+    ano = models.IntegerField("Año", max_length=4, choices=ANO_CHOICES)
+    poblacion_total = models.IntegerField()
+    poblacion_mayor_10 = models.IntegerField()
+    pea_general = models.IntegerField()
+    total_ocupados = models.IntegerField()
+    ocupados_actividad_primaria = models.IntegerField()
+    agricultura_pecuaria = models.IntegerField()
+    silvicultura = models.IntegerField()
+    pesca = models.IntegerField()
+    ocupados_actividad_secundaria = models.IntegerField()
+    manufactura = models.IntegerField("Industria Manufacturera")
+    construccion = models.IntegerField("Construccion")
+    minas_canteras = models.IntegerField("Minas y Canteras")
+    ocupados_actividad_terciaria = models.IntegerField("Ocupados Actividad Terciaria")
+    comercio = models.IntegerField()
+    gobierno_central = models.IntegerField()
+    transporte_comunicacion = models.IntegerField("Transporte y Comunicacion")
+    establecimientos_financieros = models.IntegerField("Establecimientos Financieros")
+    electricidad_gas_agua = models.IntegerField("Electricidad Gas y Agua")
+    desempleo_abierto = models.IntegerField("Desempleo Abierto", editable=False) #se calcula
+
+    def __unicode__(self):
+        return "Fuerza de Trabajo: %s" %  self.ano
+
+    def save(self, force_insert=False, force_update=False):
+        self.desempleo_abierto = self.pea_general - self.total_ocupados 
+        super(FuerzaTrabajo, self).save(force_insert, force_update)
+
+    class Meta:
+        ordering = ['ano']
+        verbose_name = 'Fuerza de Trabajo'
+        verbose_name_plural = verbose_name
