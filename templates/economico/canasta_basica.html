@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<table>
+    <tr>
+        <td>
+            Año
+        </td>
+        <td>
+           Mes 
+        </td>
+        {%for columna in columnas%}
+        <td>
+            {{columna}}
+        </td>
+        {%endfor%}
+    </tr>
+    {%for fila in datos%}
+    <tr>
+        {%for item in fila%}
+        <td>
+            {{item}}
+        </td>
+        {%endfor%}
+    </tr>
+    {%endfor%}
+</table>
+{% endblock %}

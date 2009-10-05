@@ -15,6 +15,8 @@ class SalarioMinimoAdmin(admin.ModelAdmin):
     pass
 class FuerzaTrabajoAdmin(admin.ModelAdmin):
     pass
+class TipoCanastaBasicaAdmin(admin.ModelAdmin):
+    pass
 
 admin.site.register(Mercado, MercadoAdmin)
 admin.site.register(Sector, SectorAdmin)
@@ -23,3 +25,4 @@ admin.site.register(SalarioNominal, SalarioNominalAdmin)
 admin.site.register(SalarioMinimo, SalarioMinimoAdmin)
 admin.site.register(SalarioReal, SalarioRealAdmin)
 admin.site.register(FuerzaTrabajo, FuerzaTrabajoAdmin)
+admin.site.register(TipoCanastaBasica, TipoCanastaBasicaAdmin)

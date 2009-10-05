@@ -48,8 +48,19 @@ class SalarioMinimo(models.Model):
         verbose_name_plural = "indicador de salario minimo"
         verbose_name = verbose_name_plural
 
+class TipoCanastaBasica(models.Model):
+    tipo = models.CharField("Tipo", unique=True, max_length=30)
+    slug = models.SlugField("slug", unique=True, max_length=50)
+
+    def __unicode__(self):
+        return self.tipo
+
+    class Meta:
+        verbose_name_plural='Tipos de Canastas Basicas'
+
 class CanastaBasica(models.Model):
     ano = models.IntegerField("Año", max_length=4, choices=ANO_CHOICES)
+    tipo = models.ForeignKey(TipoCanastaBasica, null=True, blank=True)
     mes = models.IntegerField("Mes", max_length=2, choices=MES_CHOICES)
     costo = models.DecimalField("Costo", max_digits=10, decimal_places=2)
 
@@ -57,7 +68,8 @@ class CanastaBasica(models.Model):
         return "Canasta Basica %s-%s" % (self.mes, self.ano)
 
     class Meta:
-        ordering = ['ano']
+        ordering = ['tipo', 'ano', 'mes']
+        unique_together=['tipo','mes', 'ano']
 
 class SalarioNominal(models.Model):
     ano = models.IntegerField("Año", max_length=4, choices=ANO_CHOICES)
