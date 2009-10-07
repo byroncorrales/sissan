@@ -92,7 +92,7 @@ def mercados(request, departamento=None, municipio=None):
         datos = get_list_or_404(Mercado, departamento__slug=departamento)
         mensaje = "Mercados del departamento de %s" % datos[0].departamento.nombre
     elif municipio:
-        datos = get_list_or_404(Mercado, municipio__slug=departamento)
+        datos = get_list_or_404(Mercado, municipio__slug=municipio)
         mensaje = "Mercados del municipio de %s" % datos[0].municipio.nombre
     else:
         datos = Mercado.objects.all()
