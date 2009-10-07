@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block contenido %}
+{{mensaje}}
+<table>
+    <tr>
+        <td>
+            Año
+        </td>
+        <td>
+          Departamento 
+        </td>
+        <td>
+           Municipio 
+        </td>
+        <td>
+          Nombre 
+        </td>
+        <td>
+          Ubicación 
+        </td>
+    </tr>
+    {%for mercado in mercados%}
+    <tr>
+        <td>
+            {{mercado.ano}}
+        </td>
+        <td>
+            <a href="/economico/mercados/departamento/{{mercado.departamento.slug}}/">{{mercado.departamento.nombre}}</a>
+        </td>
+        <td>
+            <a href="/economico/mercados/municipio/{{mercado.municipio.slug}}/">{{mercado.municipio.nombre}}</a>
+        </td>
+        <td>
+            {{mercado.nombre}}
+        </td>
+        <td>
+            {{mercado.ubicacion}}
+        </td>
+    </tr>
+    {%endfor%}
+</table>
+{% endblock %}

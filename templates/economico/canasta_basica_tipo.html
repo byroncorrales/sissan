@@ -17,18 +17,11 @@
     </tr>
     {%for fila in datos%}
     <tr>
+        {%for item in fila%}
         <td>
-            {{fila.ano}}
+            {{item}}
         </td>
-        <td>
-            {{fila.mes}}
-        </td>
-        <td>
-            {{fila.canasta_basica}}
-        </td>
-        <td>
-            {{fila.canasta_basica_rural}}
-        </td>
+        {%endfor%}
     </tr>
     {%endfor%}
 </table>

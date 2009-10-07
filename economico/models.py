@@ -50,7 +50,7 @@ class SalarioMinimo(models.Model):
 
 class TipoCanastaBasica(models.Model):
     tipo = models.CharField("Tipo", unique=True, max_length=30)
-    slug = models.SlugField("slug", unique=True, max_length=50)
+    slug = models.SlugField("slug", unique=True, max_length=50, blank=True, null=True)
 
     def __unicode__(self):
         return self.tipo
