@@ -10,6 +10,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     (r'^admin/(.*)', admin.site.root),
     (r'^', include('economico.urls')),
+    (r'^seguridad-alimentaria/', include('seguridad_alimentaria.urls')),
 )
 
 if settings.DEBUG:

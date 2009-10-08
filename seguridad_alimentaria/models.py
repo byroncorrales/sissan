@@ -62,6 +62,6 @@ class UtilizacionBiologica(models.Model):
 
     class Meta:
         unique_together=['ano','departamento']
-        ordering=['ano']
+        ordering=['-ano']
         verbose_name = "Utilizacion Biologica"
         verbose_name_plural = verbose_name
