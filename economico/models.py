@@ -136,8 +136,9 @@ class FuerzaTrabajo(models.Model):
     gobierno_central = models.IntegerField()
     transporte_comunicacion = models.IntegerField("Transporte y Comunicacion")
     establecimientos_financieros = models.IntegerField("Establecimientos Financieros")
-    electricidad_gas_agua = models.IntegerField("Electricidad Gas y Agua")
+    electricidad_gas_agua = models.IntegerField("Electricidad Gas y Agua") 
     desempleo_abierto = models.IntegerField("Desempleo Abierto", editable=False) #se calcula
+    servicios_sociales = models.DecimalField("Serv. Soc. Comun. y Personales", max_digits=10, decimal_places=2, default = 0) 
 
     def __unicode__(self):
         return "Fuerza de Trabajo: %s" %  self.ano
