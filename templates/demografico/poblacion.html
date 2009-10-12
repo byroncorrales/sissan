@@ -1,20 +1,47 @@
 {% extends 'base.html' %}
-
 {% block contenido %}
-
-
-					{% block formulario %}
-<a href="/demografico/poblacion/consulta-ano">Consultar por un ano especifico</a><br>
-<a href="/demografico/poblacion/consulta-rango">Consultar por un rango de años</a>
-{% endblock %}	
-				      {% block resultado %}{% endblock %}	
-
-{% endblock %}
-{% block columna_derecha %}
-                    <div class="bloque">
-						<div id="b_titulo">Titulo</div>
-						<div id="b_enlace">Enlace</div>
-					</div>
+{{mensaje}}
+<table>
+    <tr>
+        <td>Año</td>
+        {%if departamental%}
+        <td>Departamento</td>
+        {%endif%}
+        <td>Hombre Urbano</td>
+        <td>Mujer Urbano</td>
+        <td>Hombre Rural</td>
+        <td>Mujer Rural</td>
+        <td>Total Hombres</td>
+        <td>Total Mujeres</td>
+    </tr>
+    {% for dato in datos %}
+    <tr>
+        <td>{{dato.ano}}</td>
+        {%if departamental%}
+        <td>{{dato.departamento}}</td>
+        {%endif%}
+        <td>{{dato.hombre_urbano}}</td>
+        <td>{{dato.mujer_urbano}}</td>
+        <td>{{dato.hombre_rural}}</td>
+        <td>{{dato.mujer_rural}}</td>
+        <td>{{dato.total_hombre}}</td>
+        <td>{{dato.total_mujer}}</td>
+    </tr>
+    {%endfor%}
+    <tr>
+        {%if departamental%}
+        <td colspan="2">Totales</td>
+        {%else%}
+        <td>Totales</td>
+        {%endif%}
+        <td>{{totales.hombre_urbano}}</td>
+        <td>{{totales.mujer_urbano}}</td>
+        <td>{{totales.hombre_rural}}</td>
+        <td>{{totales.mujer_rural}}</td>
+        <td>{{totales.total_hombre}}</td>
+        <td>{{totales.total_hombre}}</td>
+    </tr>
+</table>
 {% endblock %}
 
 
