@@ -1,14 +1,20 @@
 from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
 from models import *
 from django.template.defaultfilters import slugify
-from django.db.models import Avg, Min, Max
+from django.db.models import Avg, Min, Max, Sum
 #from forms import AnoFilterForm
 
 def index(request):
     return render_to_response('economico/index.html')
 
-def salario_minimo(request):
-    pass
+def salario_minimo(request, ano_inicial=None, ano_final=None):
+    if ano_inicial and ano_final:
+        pass
+    elif ano_inicial:
+        pass
+    else:
+        pass
+    
 
 def salario_sectores(request):
     pass
@@ -54,9 +60,10 @@ def empleo(resquest, ano_inicial=None, ano_final=None):
             'tasa_sub_empleo': tasa_sub_empleo, 'anos': anos, 'mensaje': mensaje}
     return render_to_response("economico/empleo.html", dicc)
 
-
 def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
     columnas = []
+    tipos = TipoCanastaBasica.objects.all()
+    resultados = []
     template_name = 'economico/canasta_basica_tipo.html'
     if tipo!=None:
         tipo = get_object_or_404(TipoCanastaBasica, slug__iexact=tipo)
@@ -65,78 +72,55 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
             canasta_basica = get_list_or_404(CanastaBasica, ano__range=(ano_inicial, ano_final), tipo=tipo)
             columnas.append(tipo.tipo)
         else:
-            canasta_basica = get_list_or_404(CanastaBasica, ano__range=(ano_inicial, ano_final))
+            for ano in range(int(ano_inicial), int(ano_final)+1):
+                filita = []
+                filita.append(ano)
+                for tipo in tipos:
+                    canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
+                    filita.append(canastas['costo'])
+                resultados.append(filita)
             template_name='economico/canasta_basica.html'
     elif ano_inicial:
         if tipo:
             canasta_basica = CanastaBasica.objects.filter(ano=ano_inicial, tipo=tipo)
             columnas.append(tipo.tipo)
         else:
-            canasta_basica = get_list_or_404(CanastaBasica, ano=ano_inicial)
+            filita = []
+            filita.append(ano_inicial)
+            for tipo in tipos:
+                canastas = CanastaBasica.objects.filter(ano=ano_inicial, tipo=tipo).aggregate(costo=Sum('costo'))
+                filita.append(canastas['costo'])
+            resultados.append(filita)
             template_name='economico/canasta_basica.html'
     else:
         if tipo:
             canasta_basica = get_list_or_404(CanastaBasica, tipo=tipo)
             columnas.append(tipo.tipo)
         else:
-            canasta_basica = CanastaBasica.objects.all().order_by('ano', 'mes')
+            anos = CanastaBasica.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
+            for ano in range(anos['minimo'], anos['maximo']+1):
+                filita = []
+                filita.append(ano)
+                for tipo in tipos:
+                    canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
+                    filita.append(canastas['costo'])
+                resultados.append(filita)
             template_name='economico/canasta_basica.html'
-
-    resultados=[]
-    #tenemos que armar las filas 
-    #estructura ano | mes | tipo(s)
-    if len(columnas)==0:
-        #osea no hay seleccion de tipo agregamos todos los tipos
-        tipos = TipoCanastaBasica.objects.all()
-        fila = {'ano':0, 'mes':0}
-        max_index = len(tipos)-1
-        #llave_base=slugify(tipos[max_index].tipo).replace('-','_')
-        llave_base=slugify(tipos[0].tipo).replace('-','_')
-        print llave_base
-        for coso in tipos:
-            columnas.append(coso.tipo)
-            llave = slugify(coso.tipo).replace('-','_')
-            fila[llave]=''
-        #armemos filas para todos
-        llave_anterior = ''
-        for canasta in canasta_basica:
-            seguir = True
-            #print canasta.ano, canasta.mes, canasta.costo, canasta.tipo.tipo
-            while seguir:
-                if fila['ano']==canasta.ano:
-                    if fila['mes']==canasta.mes:
-                        llave = slugify(canasta.tipo).replace('-','_')
-                        #print llave, llave_anterior, llave_base
-                        seguir=False
-                        if llave!=llave_anterior:
-                            #print 'setea el valor'
-                            fila[llave]= canasta.costo
-                            seguir=False
-                            llave_anterior=llave
-                        if llave == llave_base:
-                            #print 'agrega fila'
-                            temp = dict.copy(fila) #para romper la maldita referencia
-                            if len(resultados)==1: 
-                                #osea primer elemento hp
-                                print resultados[0]
-                                print temp
-                                resultados[0]=temp
-                            resultados.append(temp)
-                            llave_anterior=llave
-                            seguir=False
-                    else:
-                        fila['mes']=canasta.mes
-                else:
-                    fila['ano']=canasta.ano
+    
+    if len(columnas) == 0:
+        #agregamos las columnas
+        for tipo in tipos:
+            columnas.append(tipo.tipo)
     else:
-        #tenemos tipo seleccionado-esto esta bien
+        ##tenemos tipo seleccionado-esto esta bien
         for canasta in canasta_basica:
             fila=[]
             fila.append(canasta.ano)
             fila.append(canasta.mes)
             fila.append(canasta.costo)
             resultados.append(fila)
-    dicc={'datos': resultados, 'columnas': columnas}
+    print resultados
+    dicc = {'datos':resultados, 'columnas': columnas}
     return render_to_response(template_name, dicc)
 
 def mercados(request, departamento=None, municipio=None):

@@ -6,9 +6,6 @@
         <td>
             Año
         </td>
-        <td>
-           Mes 
-        </td>
         {%for columna in columnas%}
         <td>
             {{columna}}
@@ -17,18 +14,11 @@
     </tr>
     {%for fila in datos%}
     <tr>
+        {%for cosito in fila%}
         <td>
-            {{fila.ano}}
+            {{cosito}}
         </td>
-        <td>
-            {{fila.mes}}
-        </td>
-        <td>
-            {{fila.canasta_basica}}
-        </td>
-        <td>
-            {{fila.canasta_basica_rural}}
-        </td>
+        {%endfor%}
     </tr>
     {%endfor%}
 </table>
