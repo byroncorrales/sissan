@@ -5,6 +5,44 @@ from models import *
 def index(request):
     pass
 
+def dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
+    productos = Productos.objects.all()
+    resultados = []
+    if ano_inicial and ano_final:
+        for ano in range(int(ano_inicial), int(ano_final)+1):
+            fila = {'ano': ano, 'datos': []}
+            for producto in productos:
+                dato = DependenciaAlimentaria.objects.get(ano=ano, producto = producto)
+                fila['datos'].append(dato.dependencia_alimentaria)
+
+            resultados.append(fila)
+    elif ano_inicial:
+        fila = {'ano': ano_inicial, 'datos':[]}
+        for producto in productos:
+            dato = DependenciaAlimentaria.objects.get(ano=ano_inicial, producto= producto)
+            fila['datos'].append(dato.dependencia_alimentaria)
+        resultados.append(fila)
+    else:
+        limites = DependenciaAlimentaria.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
+        for ano in range(limites['minimo'], limites['maximo']+1):
+            fila = {'ano': ano, 'datos': []}
+            for producto in productos:
+                dato = DependenciaAlimentaria.objects.get(ano=ano, producto=producto)
+                fila['datos'].append(dato.dependencia_alimentaria)
+            resultados.append(fila) 
+
+    variaciones = []
+    tope = len(resultados) - 1 
+    fila_inicial = resultados[0]['datos']
+    fila_final = resultados[tope]['datos']
+    for i in range(tope):
+        variacion = ((fila_final[i]-fila_inicial[i])/fila_inicial[i])*100
+        variaciones.append("%.2f" % variacion) 
+
+    dicc = {'resultados': resultados, 'variaciones': variaciones}
+    return render_to_response("seguridad_alimentaria/dependencia_alimentaria", dicc)
+
+
 def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departamento=None):
     if departamento:
         tiene_dep=True

@@ -48,6 +48,11 @@ class DependenciaAlimentaria(models.Model):
 
     def __unicode__(self):
         return "Dependencia alimentaria - %s (%s)" % (self.producto.nombre, self.ano)
+    
+    class Meta:
+        unique_together=['ano', 'producto']
+        ordering = ['ano', 'producto']
+        verbose_name_plural = 'Dependencia Alimentaria'
 
 
 class SoberaniaAlimentaria(models.Model):
