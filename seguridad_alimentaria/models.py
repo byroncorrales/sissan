@@ -28,11 +28,27 @@ class Producto(models.Model):
  #       verbose_name = "Disponibilidad y consumo aparente"
  #       verbose_name_plural = verbose_name
 
-#class DependenciaAlimentaria(models.Model):
-#    ano = models.IntegerField("Ano", max_length=4, choices=ANO_CHOICES)
-#    producto = models.ForeignKey(Producto)
-#    donaciones = models.DecimalField(max_digits=10, decimal_places=2)
-#    importaciones = models.DecimalField(max_digits=10, decimal_places=2)
+class DependenciaAlimentaria(models.Model):
+    ano = models.IntegerField("Ano", max_length=4, choices=ANO_CHOICES)
+    producto = models.ForeignKey(Producto)
+    area = models.DecimalField(help_text = "miles de manzanas", max_digits=10, decimal_places=2)
+    produccion = models.DecimalField(max_digits=10, decimal_places=2, help_text="en miles de quintales")
+    rendimiento= models.DecimalField(max_digits=10, decimal_places=2, editable=False)
+    donaciones = models.DecimalField(max_digits=10, decimal_places=2, help_text="en miles de quintales")
+    exportaciones = models.DecimalField(max_digits=10, decimal_places=2, help_text="en miles de quintales")
+    importaciones = models.DecimalField(max_digits=10, decimal_places=2, help_text="en miles de quintales")
+    dependencia_alimentaria = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
+    porcentaje = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
+
+    def save(self, force_insert=False, force_update=False):
+        self.rendimiento = self.produccion/self.area
+        self.dependencia_alimentaria = self.produccion + self.importaciones + self.donaciones - self.exportaciones
+        self.porcentaje = ((self.importaciones + self.donaciones)/self.dependencia_alimentaria)*100 
+        super(DependenciaAlimentaria, self).save(force_insert, force_update)
+
+    def __unicode__(self):
+        return "Dependencia alimentaria - %s (%s)" % (self.producto.nombre, self.ano)
+
 
 class SoberaniaAlimentaria(models.Model):
     ano = models.IntegerField("Ano", max_length=4, choices=ANO_CHOICES)
