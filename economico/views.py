@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
 from models import *
+from utils import convertir_mes
 from django.template.defaultfilters import slugify
 from django.db.models import Avg, Min, Max, Sum
 #from forms import AnoFilterForm
@@ -73,11 +74,10 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
             columnas.append(tipo.tipo)
         else:
             for ano in range(int(ano_inicial), int(ano_final)+1):
-                filita = []
-                filita.append(ano)
+                filita = {'ano': ano, 'datos': []}
                 for tipo in tipos:
                     canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
-                    filita.append(canastas['costo'])
+                    filita['datos'].append(canastas['costo'])
                 resultados.append(filita)
             template_name='economico/canasta_basica.html'
     elif ano_inicial:
@@ -85,11 +85,10 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
             canasta_basica = CanastaBasica.objects.filter(ano=ano_inicial, tipo=tipo)
             columnas.append(tipo.tipo)
         else:
-            filita = []
-            filita.append(ano_inicial)
+            filita = {'ano': ano_inicial, 'datos': []}
             for tipo in tipos:
                 canastas = CanastaBasica.objects.filter(ano=ano_inicial, tipo=tipo).aggregate(costo=Sum('costo'))
-                filita.append(canastas['costo'])
+                filita['datos'].append(canastas['costo'])
             resultados.append(filita)
             template_name='economico/canasta_basica.html'
     else:
@@ -99,11 +98,10 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
         else:
             anos = CanastaBasica.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
             for ano in range(anos['minimo'], anos['maximo']+1):
-                filita = []
-                filita.append(ano)
+                filita = {'ano': ano, 'datos': []}
                 for tipo in tipos:
                     canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
-                    filita.append(canastas['costo'])
+                    filita['datos'].append(canastas['costo'])
                 resultados.append(filita)
             template_name='economico/canasta_basica.html'
     
@@ -116,10 +114,9 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
         for canasta in canasta_basica:
             fila=[]
             fila.append(canasta.ano)
-            fila.append(canasta.mes)
+            fila.append(convertir_mes(canasta.mes))
             fila.append(canasta.costo)
             resultados.append(fila)
-    print resultados
     dicc = {'datos':resultados, 'columnas': columnas}
     return render_to_response(template_name, dicc)
 

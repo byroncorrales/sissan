@@ -14,9 +14,12 @@
     </tr>
     {%for fila in datos%}
     <tr>
-        {%for cosito in fila%}
         <td>
-            {{cosito}}
+            <a href="/economico/canasta-basica/{{fila.ano}}/">{{fila.ano}}</a>
+        </td>
+        {%for coso in fila.datos%}
+        <td>
+            {{coso}}
         </td>
         {%endfor%}
     </tr>
