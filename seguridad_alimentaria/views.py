@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Sum, Max, Min
 from models import *
 
@@ -6,29 +6,38 @@ def index(request):
     pass
 
 def dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
-    productos = Productos.objects.all()
+    productos = Producto.objects.all()
     resultados = []
     if ano_inicial and ano_final:
         for ano in range(int(ano_inicial), int(ano_final)+1):
             fila = {'ano': ano, 'datos': []}
             for producto in productos:
-                dato = DependenciaAlimentaria.objects.get(ano=ano, producto = producto)
-                fila['datos'].append(dato.dependencia_alimentaria)
+                try:
+                    dato = DependenciaAlimentaria.objects.get(ano=ano, producto = producto)
+                    fila['datos'].append(dato.dependencia_alimentaria)
+                except: 
+                    fila['datos'].append(0)
 
             resultados.append(fila)
     elif ano_inicial:
         fila = {'ano': ano_inicial, 'datos':[]}
         for producto in productos:
-            dato = DependenciaAlimentaria.objects.get(ano=ano_inicial, producto= producto)
-            fila['datos'].append(dato.dependencia_alimentaria)
+            try:
+                dato = DependenciaAlimentaria.objects.get(ano=ano_inicial, producto= producto)
+                fila['datos'].append(dato.dependencia_alimentaria)
+            except:
+                fila['datos'].append(0)
         resultados.append(fila)
     else:
         limites = DependenciaAlimentaria.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
         for ano in range(limites['minimo'], limites['maximo']+1):
             fila = {'ano': ano, 'datos': []}
             for producto in productos:
-                dato = DependenciaAlimentaria.objects.get(ano=ano, producto=producto)
-                fila['datos'].append(dato.dependencia_alimentaria)
+                try:
+                    dato = DependenciaAlimentaria.objects.get(ano=ano, producto=producto)
+                    fila['datos'].append(dato.dependencia_alimentaria)
+                except:
+                    fila['datos'].append(0)
             resultados.append(fila) 
 
     variaciones = []
@@ -36,12 +45,56 @@ def dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
     fila_inicial = resultados[0]['datos']
     fila_final = resultados[tope]['datos']
     for i in range(tope):
-        variacion = ((fila_final[i]-fila_inicial[i])/fila_inicial[i])*100
+        variacion = ((fila_final[i]-fila_inicial[i])/fila_inicial[i])*100 if fila_inicial[i]!=0 else 0
         variaciones.append("%.2f" % variacion) 
 
-    dicc = {'resultados': resultados, 'variaciones': variaciones}
-    return render_to_response("seguridad_alimentaria/dependencia_alimentaria", dicc)
+    dicc = {'resultados': resultados, 'variaciones': variaciones, 
+            'productos': productos}
+    return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
 
+def dependencia_alimentaria_producto(request, producto, ano_inicial=None, ano_final=None):
+    producto = get_object_or_404(Producto, slug=producto)
+    productos = [producto]
+    print productos
+    resultados = []
+    if ano_inicial and ano_final:
+        for ano in range(int(ano_inicial), int(ano_final)+1):
+            fila = {'ano': ano, 'datos': []}
+            try:
+                dato = DependenciaAlimentaria.objects.get(ano=ano, producto = producto)
+                fila['datos'].append(dato.dependencia_alimentaria)
+            except:
+                fila['datos'].append(0)
+            resultados.append(fila)
+    elif ano_inicial:
+        fila = {'ano': ano_inicial, 'datos':[]}
+        try:
+            dato = DependenciaAlimentaria.objects.get(ano=ano_inicial, producto= producto)
+            fila['datos'].append(dato.dependencia_alimentaria)
+        except:
+            fila['datos'].append(0)
+        resultados.append(fila)
+    else:
+        limites = DependenciaAlimentaria.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
+        for ano in range(limites['minimo'], limites['maximo']+1):
+            fila = {'ano': ano, 'datos': []}
+            try:
+                dato = DependenciaAlimentaria.objects.get(ano=ano, producto=producto)
+                fila['datos'].append(dato.dependencia_alimentaria)
+            except:
+                fila['datos'].append(0)
+            resultados.append(fila) 
+
+    variaciones = []
+    tope = len(resultados) - 1 
+    fila_inicial = resultados[0]['datos']
+    fila_final = resultados[tope]['datos']
+    variacion = ((fila_final[0]-fila_inicial[0])/fila_inicial[0])*100 if fila_inicial[0]!=0 else 0
+    variaciones.append("%.2f" % variacion) 
+
+    dicc = {'resultados': resultados, 'variaciones': variaciones, 
+            'productos': productos}
+    return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
 
 def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departamento=None):
     if departamento:

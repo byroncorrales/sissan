@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block contenido %}
+{{mensaje}}
+<table>
+    <tr>
+        <td>
+            Año
+        </td>
+        {%for producto in productos%}
+        <td>
+            {{producto.nombre}}
+        </td>
+        {%endfor%}
+    </tr>
+    {%for dato in resultados reversed%}
+    <tr>
+        <td>
+            <a href="/seguridad-alimentaria/dependencia-alimentaria/{{dato.ano}}"/> {{dato.ano}} </a>
+        </td>
+        {%for numero in dato.datos%}
+        <td>
+            {{numero}}
+        </td>
+        {%endfor%}
+    </tr>
+    {%endfor%}
+    <tr>
+        <td>
+            Variación
+        </td>
+        {%for variacion in variaciones%}
+        <td>
+            {{variacion}}%
+        </td>
+        {%endfor%}
+</table>
+{% endblock %}

@@ -9,6 +9,7 @@ for i in range (datetime.date.today().year,1989,-1):
 
 class Producto(models.Model):
     nombre = models.CharField("Nombre del Producto", max_length=20)
+    slug = models.SlugField("url limpia", null=True)
 
     def __unicode__(self):
         return self.nombre
