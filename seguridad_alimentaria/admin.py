@@ -2,7 +2,7 @@ from django.contrib import admin
 from seguridad_alimentaria.models import *
 
 class ProductoAdmin(admin.ModelAdmin):
-    pass
+    prepopulated_fields = {"slug": ("nombre",)}
 class SoberaniaAlimentariaAdmin(admin.ModelAdmin):
     pass
 class UtilizacionBiologicaAdmin(admin.ModelAdmin):

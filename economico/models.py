@@ -26,6 +26,7 @@ MES_CHOICES = (
 
 class Sector(models.Model):
     nombre = models.CharField("Nombre del Sector", max_length=50, unique=True)
+    slug = models.SlugField(unique=True, null=True)
 
     def __unicode__(self):
         return self.nombre

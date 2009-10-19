@@ -4,7 +4,7 @@ from economico.models import *
 class MercadoAdmin(admin.ModelAdmin):
     pass
 class SectorAdmin(admin.ModelAdmin):
-    pass
+    prepopulated_fields = {"slug": ("nombre",)}
 class CanastaBasicaAdmin(admin.ModelAdmin):
     pass
 class SalarioNominalAdmin(admin.ModelAdmin):
@@ -16,7 +16,8 @@ class SalarioMinimoAdmin(admin.ModelAdmin):
 class FuerzaTrabajoAdmin(admin.ModelAdmin):
     pass
 class TipoCanastaBasicaAdmin(admin.ModelAdmin):
-    pass
+    prepopulated_fields = {"slug": ("tipo",)}
+
 
 admin.site.register(Mercado, MercadoAdmin)
 admin.site.register(Sector, SectorAdmin)
