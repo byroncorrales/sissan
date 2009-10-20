@@ -17,4 +17,12 @@ urlpatterns = patterns('seguridad_alimentaria.views',
                         (r'^dependencia-alimentaria/(?P<producto>\w+)/$', 'dependencia_alimentaria_producto'),
                         (r'^dependencia-alimentaria/(?P<ano_inicial>\d{4})/(?P<producto>\w+)/$', 'dependencia_alimentaria_producto'),
                         (r'^dependencia-alimentaria/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/(?P<producto>\w+)/$', 'dependencia_alimentaria_producto'),
+                        #disponibilidad
+                        (r'^disponibilidad/$', 'disponibilidad'),
+                        (r'^disponibilidad/(?P<ano_inicial>\d{4})/$', 'disponibilidad'),
+                        (r'^disponibilidad/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/$', 'disponibilidad'),
+                        (r'^disponibilidad/(?P<producto>\w+)/$', 'disponibilidad'),
+                        (r'^disponibilidad/(?P<ano_inicial>\d{4})/(?P<producto>\w+)/$', 'disponibilidad'),
+                        (r'^disponibilidad/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/(?P<producto>\w+)/$', 'disponibilidad'),
+
                        )

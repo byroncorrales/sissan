@@ -1,5 +1,6 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Sum, Max, Min
+from demografico.models import Poblacion
 from models import *
 
 def index(request):
@@ -116,7 +117,7 @@ def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departament
         datos = []
         tiene_dep=False
         if ano_inicial and ano_final:
-            for ano in range(ano_inicial, ano_final):
+            for ano in range(ano_inicial, ano_final+1):
                 resultado = UtilizacionBiologica.objects.filter(ano=ano).aggregate(
                     enfermedades_diarreicas=Sum('enfermedades_diarreicas'), 
                     enfermedades_respiratorias=Sum('enfermedades_respiratorias'))
@@ -149,10 +150,58 @@ def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departament
     return render_to_response('seguridad_alimentaria/utilizacion_biologica.html', dicc)
 
 
-def disponibilidad(request, ano_inicial=None, ano_final=None):
-    if ano_inicial and ano_final:
-        pass
-    elif ano_inicial:
-        pass
+def disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
+    #formula disp = produccion + importaciones + donaciones + exportaciones (dependencia alimentaria)
+    #consumo aparente = disp/poblacion
+    disponibilidades = []
+    consumos = []
+    columnas = []
+    if producto:
+        producto = get_object_or_404(Producto, slug=producto)
+        productos = [producto]
     else:
-        pass
+        productos = Producto.objects.all()
+
+    if ano_inicial and ano_final:
+        for ano in range(int(ano_inicial), int(ano_final)+1):
+            poblacion = Poblacion.objects.get(ano=ano)
+            fila_disp = {'ano': ano, 'datos': []}
+            fila_consumo = {'ano': ano, 'datos': []}
+            for producto in productos:
+                dependencia = DependenciaAlimentaria.objects.get(ano=ano, producto=producto)
+                disponibilidad = dependencia.produccion + dependencia.importaciones + dependencia.donaciones - dependencia.exportaciones
+                consumo_aparente = disponibilidad/poblacion.total_ambos_sexos 
+                fila_disp['datos'].append(disponibilidad)
+                fila_consumo['datos'].append("%.2f" % consumo_aparente)
+            disponibilidades.append(fila_disp)
+            consumos.append(fila_consumo)
+    elif ano_inicial:
+        poblacion = Poblacion.objects.get(ano=ano_inicial)
+        fila_disp = {'ano': ano_inicial, 'datos': []}
+        fila_consumo = {'ano': ano_inicial, 'datos': []}
+        for producto in productos:
+            dependencia = DependenciaAlimentaria.objects.get(ano=ano_inicial, producto=producto)
+            disponibilidad = dependencia.produccion + dependencia.importaciones + dependencia.donaciones - dependencia.exportaciones
+            consumo_aparente = disponibilidad/poblacion.total_ambos_sexos 
+            fila_disp['datos'].append(disponibilidad)
+            fila_consumo['datos'].append("%.2f" % consumo_aparente)
+        disponibilidades.append(fila_disp)
+        consumos.append(fila_consumo)
+    else:
+        anos = DependenciaAlimentaria.objects.all().aggregate(minimo = Min('ano'), maximo= Max('ano'))
+        for ano in range(anos['minimo'], anos['maximo']+1):
+            poblacion = Poblacion.objects.get(ano=ano)
+            fila_disp = {'ano': ano, 'datos': []}
+            fila_consumo = {'ano': ano, 'datos': []}
+            for producto in productos:
+                dependencia = DependenciaAlimentaria.objects.get(ano=ano, producto=producto)
+                disponibilidad = dependencia.produccion + dependencia.importaciones + dependencia.donaciones - dependencia.exportaciones
+                consumo_aparente = disponibilidad/poblacion.total_ambos_sexos 
+                fila_disp['datos'].append(disponibilidad)
+                fila_consumo['datos'].append("%.2f" % consumo_aparente)
+            disponibilidades.append(fila_disp)
+            consumos.append(fila_consumo)
+    #TODO: calcular variaciones
+
+    dicc = {'disponibilidades': disponibilidades, 'consumos': consumos, 'productos': productos}
+    return render_to_response('seguridad_alimentaria/disponibilidad.html', dicc)
