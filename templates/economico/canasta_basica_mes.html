@@ -17,9 +17,15 @@
     </tr>
     {%for fila in datos%}
     <tr>
-        {%for item in fila%}
         <td>
-            {{item}}
+            {{fila.ano}}
+        </td>
+        <td>
+            {{fila.mes}}
+        </td>
+        {%for valor in fila.datos%}
+        <td>
+            {{valor}}
         </td>
         {%endfor%}
     </tr>

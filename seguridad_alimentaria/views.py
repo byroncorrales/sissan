@@ -147,3 +147,12 @@ def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departament
     variaciones = {'variacion_eda': variacion_eda, 'variacion_ira': variacion_ira}
     dicc = {'datos': datos, 'mensaje': mensaje, 'variaciones': variaciones, 'departamento': tiene_dep}
     return render_to_response('seguridad_alimentaria/utilizacion_biologica.html', dicc)
+
+
+def disponibilidad(request, ano_inicial=None, ano_final=None):
+    if ano_inicial and ano_final:
+        pass
+    elif ano_inicial:
+        pass
+    else:
+        pass

@@ -63,60 +63,45 @@ def empleo(resquest, ano_inicial=None, ano_final=None):
 
 def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
     columnas = []
-    tipos = TipoCanastaBasica.objects.all()
-    resultados = []
-    template_name = 'economico/canasta_basica_tipo.html'
-    if tipo!=None:
+    if tipo:
         tipo = get_object_or_404(TipoCanastaBasica, slug__iexact=tipo)
+        tipos = [tipo]
+    else:
+        tipos = TipoCanastaBasica.objects.all()
+    resultados = []
+    template_name = 'economico/canasta_basica.html'
     if ano_inicial and ano_final:
-        if tipo:
-            canasta_basica = get_list_or_404(CanastaBasica, ano__range=(ano_inicial, ano_final), tipo=tipo)
-            columnas.append(tipo.tipo)
-        else:
-            for ano in range(int(ano_inicial), int(ano_final)+1):
-                filita = {'ano': ano, 'datos': []}
-                for tipo in tipos:
-                    canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
-                    filita['datos'].append(canastas['costo'])
-                resultados.append(filita)
-            template_name='economico/canasta_basica.html'
-    elif ano_inicial:
-        if tipo:
-            canasta_basica = CanastaBasica.objects.filter(ano=ano_inicial, tipo=tipo)
-            columnas.append(tipo.tipo)
-        else:
-            filita = {'ano': ano_inicial, 'datos': []}
+        for ano in range(int(ano_inicial), int(ano_final)+1):
+            filita = {'ano': ano, 'datos': []}
             for tipo in tipos:
-                canastas = CanastaBasica.objects.filter(ano=ano_inicial, tipo=tipo).aggregate(costo=Sum('costo'))
+                canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
                 filita['datos'].append(canastas['costo'])
             resultados.append(filita)
-            template_name='economico/canasta_basica.html'
+    elif ano_inicial:
+        filita = {'ano': ano_inicial,'mes': 0, 'datos': []}
+        for i in range(1,13):
+            filita['mes']=convertir_mes(i)
+            filita['datos'] = []
+            for tipo in tipos:
+                try:
+                    canastas = CanastaBasica.objects.get(ano=ano_inicial, tipo=tipo, mes=i)
+                    filita['datos'].append(canastas.costo)
+                except:
+                    filita['datos'].append(0)
+            temp = dict.copy(filita)#para romper la byref
+            resultados.append(temp)
+        template_name='economico/canasta_basica_mes.html'
     else:
-        if tipo:
-            canasta_basica = get_list_or_404(CanastaBasica, tipo=tipo)
-            columnas.append(tipo.tipo)
-        else:
-            anos = CanastaBasica.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
-            for ano in range(anos['minimo'], anos['maximo']+1):
-                filita = {'ano': ano, 'datos': []}
-                for tipo in tipos:
-                    canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
-                    filita['datos'].append(canastas['costo'])
-                resultados.append(filita)
-            template_name='economico/canasta_basica.html'
+        anos = CanastaBasica.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
+        for ano in range(anos['minimo'], anos['maximo']+1):
+            filita = {'ano': ano, 'datos': []}
+            for tipo in tipos:
+                canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
+                filita['datos'].append(canastas['costo'])
+            resultados.append(filita)
     
-    if len(columnas) == 0:
-        #agregamos las columnas
-        for tipo in tipos:
-            columnas.append(tipo.tipo)
-    else:
-        ##tenemos tipo seleccionado-esto esta bien
-        for canasta in canasta_basica:
-            fila=[]
-            fila.append(canasta.ano)
-            fila.append(convertir_mes(canasta.mes))
-            fila.append(canasta.costo)
-            resultados.append(fila)
+    for tipo in tipos:
+        columnas.append(tipo.tipo)
     dicc = {'datos':resultados, 'columnas': columnas}
     return render_to_response(template_name, dicc)
 
