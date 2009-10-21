@@ -12,6 +12,11 @@
         </td>
         {%endfor%}
     </tr>
+    <tr>
+        <td>
+            Disponibilidad
+        </td>
+    </tr>
     {%for dato in disponibilidades reversed%}
     <tr>
         <td>
@@ -28,7 +33,7 @@
         <td>
             Variación
         </td>
-        {%for variacion in variaciones%}
+        {%for variacion in var_disp%}
         <td>
             {{variacion}}%
         </td>
@@ -54,7 +59,7 @@
         <td>
             Variación
         </td>
-        {%for variacion in variaciones%}
+        {%for variacion in var_consumos%}
         <td>
             {{variacion}}%
         </td>

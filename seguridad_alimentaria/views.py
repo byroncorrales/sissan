@@ -46,7 +46,7 @@ def dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
     fila_inicial = resultados[0]['datos']
     fila_final = resultados[tope]['datos']
     for i in range(tope):
-        variacion = ((fila_final[i]-fila_inicial[i])/fila_inicial[i])*100 if fila_inicial[i]!=0 else 0
+        variacion = ((fila_final[i]-fila_inicial[i])/fila_inicial[i])*100 if fila_inicial[i]!=0 else 100 
         variaciones.append("%.2f" % variacion) 
 
     dicc = {'resultados': resultados, 'variaciones': variaciones, 
@@ -201,7 +201,17 @@ def disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
                 fila_consumo['datos'].append("%.2f" % consumo_aparente)
             disponibilidades.append(fila_disp)
             consumos.append(fila_consumo)
-    #TODO: calcular variaciones
 
-    dicc = {'disponibilidades': disponibilidades, 'consumos': consumos, 'productos': productos}
+    #variaciones!
+    variacion_disp = []
+    variacion_consumo = []
+    tope = len(consumos)-1
+    for i in range(len(productos)):
+        var_disp = ((float(disponibilidades[tope]['datos'][i]) - float(disponibilidades[0]['datos'][i]))/float(disponibilidades[0]['datos'][i]))*100
+        variacion_disp.append("%.2f" % var_disp)
+        var_consumos = ((float(consumos[tope]['datos'][i]) - float(consumos[0]['datos'][i]))/float(consumos[0]['datos'][i]))*100
+        variacion_consumo.append("%.2f" % var_consumos)
+            
+    dicc = {'disponibilidades': disponibilidades, 'consumos': consumos, 
+            'productos': productos, 'var_disp': variacion_disp, 'var_consumos': variacion_consumo}
     return render_to_response('seguridad_alimentaria/disponibilidad.html', dicc)
