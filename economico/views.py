@@ -8,14 +8,71 @@ from django.db.models import Avg, Min, Max, Sum
 def index(request):
     return render_to_response('economico/index.html')
 
-def salario_minimo(request, ano_inicial=None, ano_final=None):
-    if ano_inicial and ano_final:
-        pass
-    elif ano_inicial:
-        pass
+def salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
+    mes = False
+    if sector:
+        sector = Sector.objects.get(slug=sector)
+        sectores = [sector]
     else:
-        pass
+        sectores = Sector.objects.all()
+
+    resultados = [] 
+    promedios = []
+
+    if ano_inicial and ano_final:
+        for ano in range(int(ano_inicial), int(ano_final)+1):
+            fila = {'ano':ano ,'datos': []}
+            for sector in sectores:
+                try:
+                    salario = SalarioMinimo.objects.filter(ano=ano, sector=sector).aggregate(valor=Avg('salario'))
+                    tmp = salario['valor']
+                    fila['datos'].append("%.2f" % tmp)
+                except:
+                    fila['datos'].append(0)
+            resultados.append(fila)
+            
+    elif ano_inicial:
+        fila = {'ano': ano_inicial, 'mes':0, 'datos': []}
+        mes = True
+        for sector in sectores:
+            promedio = SalarioMinimo.objects.filter(ano=ano_inicial, sector=sector).aggregate(prom=Avg('salario'))
+            promedios.append(promedio['prom'])
+
+        for i in range(1,13):
+            fila['mes'] = convertir_mes(i)
+            fila['datos']=[]
+            for sector in sectores:
+                try:
+                    dato = SalarioMinimo.objects.get(ano=ano_inicial, mes=i, sector=sector)
+                    fila['datos'].append(dato.salario)
+                except:
+                    fila['datos'].append(0)
+            temp = dict.copy(fila)
+            resultados.append(temp)
+    else:
+        rango = SalarioMinimo.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
+        for ano in range(rango['minimo'], rango['maximo']+1):
+            fila = {'ano':ano ,'datos': []}
+            for sector in sectores:
+                try:
+                    salario = SalarioMinimo.objects.filter(ano=ano, sector=sector).aggregate(valor=Avg('salario'))
+                    tmp = salario['valor']
+                    fila['datos'].append("%.2f" % tmp)
+                except:
+                    fila['datos'].append(0)
+            resultados.append(fila)
     
+    #variaciones
+    variaciones = []
+    if fila.has_key('mes')==False:
+        tope = len(resultados)-1
+        for i in range(len(sectores)):
+            variacion = ((float(resultados[tope]['datos'][i]) - float(resultados[0]['datos'][i]))/float(resultados[0]['datos'][i])*100) if resultados[0]['datos'][i]!= None else 0
+            variaciones.append("%.2f" % variacion)
+    
+    dicc = {'datos': resultados, 'sectores': sectores, 
+            'variaciones': variaciones, 'tiene_mes': mes, 'promedios': promedios}
+    return render_to_response('economico/salario_minimo.html', dicc)
 
 def salario_sectores(request):
     pass

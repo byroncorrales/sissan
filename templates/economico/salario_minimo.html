@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<table>
+    <tr>
+        <td>
+            Año
+        </td>
+        {%if tiene_mes%}
+        <td>
+            Mes
+        </td>
+        {%endif%}
+        {%for sector in sectores%}
+        <td>
+            {{sector.nombre}}
+        </td>
+        {%endfor%}
+    </tr>
+    {%for fila in datos %}
+    <tr>
+        <td>
+            <a href="/economico/salario-minimo/{{fila.ano}}/">{{fila.ano}}</a>
+        </td>
+        {%if tiene_mes%}
+        <td>
+            {{fila.mes}}
+        </td>
+        {%endif%}
+        {%for coso in fila.datos%}
+        <td>
+            {{coso}}
+        </td>
+        {%endfor%}
+    </tr>
+    {%endfor%}
+    <tr>
+        {%if tiene_mes%}
+        <td colspan="2">
+           promedio
+        </td>
+        {%for promedio in promedios%}
+        <td>
+            {{promedio|floatformat:2}}
+        </td>
+        {%endfor%}
+        {%else%}
+        <td>
+            variaciones
+        </td>
+        {%for variacion in variaciones%}
+        <td>
+            {{variacion}}
+        </td>
+        {%endfor%}
+        {%endif%}
+    </tr>
+</table>
+{% endblock %}
