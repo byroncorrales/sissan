@@ -24,4 +24,8 @@ urlpatterns = patterns('economico.views',
                         (r'^economico/salario-minimo/(?P<ano_inicial>\d{4})/sector/(?P<sector>[\w-]+)/$', 'salario_minimo'),
                         (r'^economico/salario-minimo/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/$', 'salario_minimo'),
                         (r'^economico/salario-minimo/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/sector/(?P<sector>\w+)/$', 'salario_minimo'),
+                        #salario nominal real
+                        (r'^economico/salario-nominal-real/$', 'salario_nominal_real'),
+                        (r'^economico/salario-nominal-real/(?P<ano_inicial>\d{4})/$', 'salario_nominal_real'),
+                        (r'^economico/salario-nominal-real/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/$', 'salario_nominal_real'),
                        )

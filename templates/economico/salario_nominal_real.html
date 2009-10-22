@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block contenido %}
+<table>
+    <tr>
+        <td>
+            Año
+        </td>
+        {%if tiene_mes%}
+        <td>
+            Mes
+        </td>
+        {%endif%}
+        <td colspan="3">
+            Salario Nominal Promedio
+        </td>
+        <td colspan="3">
+            Salario Real Promedio 
+        </td>
+        <td colspan="3">
+            Variación Porcentual del salario 
+        </td>
+    </tr>
+    <tr>
+        <td>
+        </td>
+        <td>
+            Asegurados INSS
+        </td>
+        <td>
+            Gobierno Central
+        </td>
+        <td>
+            Salario Nacional
+        </td>
+        <td>
+            Asegurados INSS
+        </td>
+        <td>
+            Gobierno Central
+        </td>
+        <td>
+            Salario Nacional
+        </td>
+        <td>
+            Asegurados INSS
+        </td>
+        <td>
+            Gobierno Central
+        </td>
+        <td>
+            Salario Nacional
+        </td>
+
+    </tr>
+    {%for fila in datos %}
+    <tr>
+        <td>
+            <a href="/economico/salario-nominal-real/{{fila.ano}}/">{{fila.ano}}</a>
+        </td>
+        {%if tiene_mes%}
+        <td>
+            {{fila.mes}}
+        </td>
+        {%endif%}
+        {%for coso in fila.datos%}
+        <td>
+            {{coso|floatformat:2}}
+        </td>
+        {%endfor%}
+    </tr>
+    {%endfor%}
+    <tr>
+        {%if tiene_mes%}
+        {%else%}
+        <td>
+            variaciones
+        </td>
+        {%for variacion in variaciones%}
+        <td>
+            {{variacion|floatformat:2}}%
+        </td>
+        {%endfor%}
+        {%endif%}
+    </tr>
+</table>
+{% endblock %}

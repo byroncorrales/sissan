@@ -176,5 +176,124 @@ def mercados(request, departamento=None, municipio=None):
     dicc = {'mercados': datos, 'mensaje': mensaje}
     return render_to_response("economico/mercados.html", dicc)
 
-def salario_nominal_real(request):
-    pass
+def salario_nominal_real(request, ano_inicial=None, ano_final=None):
+    mes = False
+    resultados = [] 
+
+    if ano_inicial and ano_final:
+        for ano in range(int(ano_inicial), int(ano_final)+1):
+            fila = {'ano':ano ,'datos': []}
+            try:
+                salario_nominal = SalarioNominal.objects.filter(ano=ano).aggregate(asegurados=Avg('asegurados_inss'),
+                                                                                   gobierno=Avg('gobierno_central'),
+                                                                                   nacional=Avg('salario_nacional'))
+                fila['datos'].append(salario_nominal['asegurados'])
+                fila['datos'].append(salario_nominal['gobierno'])
+                fila['datos'].append(salario_nominal['nacional'])
+            except:
+                salario_nominal = {'asegurados': 0, 'gobierno': 0, 'nacional':0}
+                for key in salario_nominal.keys():
+                    fila['datos'].append(0)
+                
+            try:
+                salario_real= SalarioReal.objects.filter(ano=ano).aggregate(asegurados=Avg('asegurados_inss'),
+                                                                                           gobierno=Avg('gobierno_central'),
+                                                                                           nacional=Avg('salario_nacional'))
+                fila['datos'].append(salario_real['asegurados'])
+                fila['datos'].append(salario_real['gobierno'])
+                fila['datos'].append(salario_real['nacional'])
+            except:
+                salario_real = {'asegurados': 0, 'gobierno': 0, 'nacional':0}
+                for key in salario_real.keys():
+                    fila['datos'].append(0)
+
+            #variaciones del salario real 
+            for key in salario_nominal.keys():
+                variacion = ((salario_nominal[key] - salario_real[key])/salario_nominal[key])*100
+                fila['datos'].append(variacion)
+            temp = dict.copy(fila)
+            resultados.append(temp)
+            
+    elif ano_inicial:
+        fila = {'ano': ano_inicial, 'mes':0, 'datos': []}
+        mes = True
+        for i in range(1,13):
+            fila['mes'] = convertir_mes(i)
+            fila['datos']=[]
+            try:
+                dato = SalarioNominal.objects.get(ano=ano_inicial, mes=i)
+                fila['datos'].append(dato.asegurados_inss)
+                fila['datos'].append(dato.gobierno_central)
+                fila['datos'].append(dato.salario_nacional)
+            except:
+                fila['datos'].append(0)
+                fila['datos'].append(0)
+                fila['datos'].append(0)
+            try:
+                dato = SalarioReal.objects.get(ano=ano_inicial, mes=i)
+                fila['datos'].append(dato.asegurados_inss)
+                fila['datos'].append(dato.gobierno_central)
+                fila['datos'].append(dato.salario_nacional)
+            except:
+                fila['datos'].append(0)
+                fila['datos'].append(0)
+                fila['datos'].append(0)
+            temp = dict.copy(fila)
+            resultados.append(temp)
+    else:
+        rango_nominal = SalarioNominal.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
+        rango_real = SalarioNominal.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
+        rango = {'minimo':0, 'maximo':0}
+
+        if rango_nominal['minimo']<=rango_real['minimo']:
+            rango['minimo']=rango_nominal['minimo']
+        else:
+            rango['minimo']=rango_real['minimo']
+
+        if rango_nominal['maximo']<=rango_real['maximo']:
+            rango['maximo']=rango_nominal['maximo']
+        else:
+            rango['maximo']=rango_real['maximo']
+
+        for ano in range(rango['minimo'], rango['maximo']+1):
+            fila = {'ano':ano ,'datos': []}
+            try:
+                salario_nominal = SalarioNominal.objects.filter(ano=ano).aggregate(asegurados=Avg('asegurados_inss'), 
+                                                                                                 gobierno=Avg('gobierno_central'),
+                                                                                                 nacional=Avg('salario_nacional'))
+                for key in salario_nominal.keys():
+                    fila['datos'].append(salario_nominal[key])
+            except:
+                salario_nominal = {'asegurados': 0, 'gobierno': 0, 'nacional':0}
+                for key in salario_nominal.keys():
+                    fila['datos'].append(0)
+                
+            try:
+                salario_real= SalarioReal.objects.filter(ano=ano).aggregate(asegurados=Avg('asegurados_inss'),
+                                                                                           gobierno=Avg('gobierno_central'),
+                                                                                           nacional=Avg('salario_nacional'))
+                for key in salario_real.keys():
+                    fila['datos'].append(salario_real[key])
+            except:
+                salario_real = {'asegurados': 0, 'gobierno': 0, 'nacional':0}
+                for key in salario_real.keys():
+                    fila['datos'].append(0)
+            #variaciones del salario real 
+            for key in salario_nominal.keys():
+                variacion = ((salario_nominal[key] - salario_real[key])/salario_nominal[key])*100
+                fila['datos'].append(variacion)
+            temp = dict.copy(fila)
+            resultados.append(temp)
+        
+
+    #variaciones
+    variaciones = []
+    if fila.has_key('mes')==False:
+        tope = len(resultados)-1
+        for i in range(len(resultados[0]['datos'])):
+            variacion = ((float(resultados[tope]['datos'][i]) - float(resultados[0]['datos'][i]))/float(resultados[0]['datos'][i])*100) if resultados[0]['datos'][i]!= None else 0
+            variaciones.append(variacion)
+    
+    dicc = {'datos': resultados, 'variaciones': variaciones,
+            'tiene_mes': mes}
+    return render_to_response('economico/salario_nominal_real.html', dicc)
