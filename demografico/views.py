@@ -1,4 +1,4 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from demografico.models import Poblacion
 from lugar.models import Departamento
 from django.db.models import Avg, Sum, Max, Min
@@ -9,10 +9,11 @@ from django.db.models import Avg, Sum, Max, Min
 #	CHOICESANO.append((i,str(i)))
 
 def poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
-    try:
-        dept = Departamento.objects.get(slug=departamento)
-    except:
-        dept = None
+    departamental=None
+    if departamento:
+        dept = get_object_or_404(Departamento, slug=departamento)
+    else:
+        dept=None
     if dept:
         if ano_inicial and ano_final:
             datos = Poblacion.objects.filter(ano__range=(ano_inicial, ano_final), departamento = dept)
@@ -50,18 +51,21 @@ def poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
             datos.append(resultado)
             mensaje = "Poblacion (%s)" % ano_inicial
         else:
-            anos = Poblacion.objects.all().aggregate(ano_minimo = Min('ano'),
-                                                     ano_maximo = Max('ano'))
-            for ano in range(int(anos['ano_minimo']), int(anos['ano_maximo'])+1):
-                resultado = Poblacion.objects.filter(ano=ano).aggregate(
-                    hombre_urbano = Sum('hombre_urbano'),
-                    mujer_urbano = Sum('mujer_urbano'),
-                    hombre_rural = Sum('hombre_rural'),
-                    mujer_rural = Sum('mujer_rural'),
-                    total_hombre = Sum('total_hombre'),
-                    total_mujer = Sum('total_mujer'))
-                resultado['ano']=ano
-                datos.append(resultado)
+            try:
+                anos = Poblacion.objects.all().aggregate(ano_minimo = Min('ano'),
+                                                         ano_maximo = Max('ano'))
+                for ano in range(int(anos['ano_minimo']), int(anos['ano_maximo'])+1):
+                    resultado = Poblacion.objects.filter(ano=ano).aggregate(
+                        hombre_urbano = Sum('hombre_urbano'),
+                        mujer_urbano = Sum('mujer_urbano'),
+                        hombre_rural = Sum('hombre_rural'),
+                        mujer_rural = Sum('mujer_rural'),
+                        total_hombre = Sum('total_hombre'),
+                        total_mujer = Sum('total_mujer'))
+                    resultado['ano']=ano
+                    datos.append(resultado)
+            except TypeError:
+                pass
             mensaje = "Poblacion total"
 
     totales = {'hombre_urbano': 0, 'hombre_rural': 0,
