@@ -11,7 +11,7 @@ def index(request):
 def salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
     mes = False
     if sector:
-        sector = Sector.objects.get(slug=sector)
+        sector = get_object_or_404(Sector, slug=sector)
         sectores = [sector]
     else:
         sectores = Sector.objects.all()
@@ -51,16 +51,19 @@ def salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
             resultados.append(temp)
     else:
         rango = SalarioMinimo.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
-        for ano in range(rango['minimo'], rango['maximo']+1):
-            fila = {'ano':ano ,'datos': []}
-            for sector in sectores:
-                try:
-                    salario = SalarioMinimo.objects.filter(ano=ano, sector=sector).aggregate(valor=Avg('salario'))
-                    tmp = salario['valor']
-                    fila['datos'].append("%.2f" % tmp)
-                except:
-                    fila['datos'].append(0)
-            resultados.append(fila)
+        try:
+            for ano in range(rango['minimo'], rango['maximo']+1):
+                fila = {'ano':ano ,'datos': []}
+                for sector in sectores:
+                    try:
+                        salario = SalarioMinimo.objects.filter(ano=ano, sector=sector).aggregate(valor=Avg('salario'))
+                        tmp = salario['valor']
+                        fila['datos'].append("%.2f" % tmp)
+                    except:
+                        fila['datos'].append(0)
+                resultados.append(fila)
+        except TypeError:
+                fila = {'ano':0 ,'datos': []}
     
     #variaciones
     variaciones = []
@@ -73,9 +76,6 @@ def salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
     dicc = {'datos': resultados, 'sectores': sectores, 
             'variaciones': variaciones, 'tiene_mes': mes, 'promedios': promedios}
     return render_to_response('economico/salario_minimo.html', dicc)
-
-def salario_sectores(request):
-    pass
 
 def empleo(resquest, ano_inicial=None, ano_final=None):
     anos = []
@@ -94,7 +94,10 @@ def empleo(resquest, ano_inicial=None, ano_final=None):
         #sacar ano max y ano min!
         datos = FuerzaTrabajo.objects.all()
         rango_anos = datos.aggregate(minimo = Min('ano'), maximo = Max('ano'))
-        anos = range(rango_anos['minimo'], rango_anos['maximo']+1)
+        try:
+            anos = range(rango_anos['minimo'], rango_anos['maximo']+1)
+        except:
+            anos = None
 
         mensaje = 'Empleo ' 
 
@@ -149,13 +152,16 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
             resultados.append(temp)
         template_name='economico/canasta_basica_mes.html'
     else:
-        anos = CanastaBasica.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
-        for ano in range(anos['minimo'], anos['maximo']+1):
-            filita = {'ano': ano, 'datos': []}
-            for tipo in tipos:
-                canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
-                filita['datos'].append(canastas['costo'])
-            resultados.append(filita)
+        try:
+            anos = CanastaBasica.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
+            for ano in range(anos['minimo'], anos['maximo']+1):
+                filita = {'ano': ano, 'datos': []}
+                for tipo in tipos:
+                    canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
+                    filita['datos'].append(canastas['costo'])
+                resultados.append(filita)
+        except TypeError:
+            pass
     
     for tipo in tipos:
         columnas.append(tipo.tipo)
@@ -245,6 +251,11 @@ def salario_nominal_real(request, ano_inicial=None, ano_final=None):
         rango_real = SalarioNominal.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
         rango = {'minimo':0, 'maximo':0}
 
+        if rango_nominal['minimo'] == None and rango_nominal['maximo']==None:
+            rango_nominal={'minimo': 0, 'maximo': 0}
+        if rango_real['minimo'] == None and rango_real['maximo']==None:
+            rango_real={'minimo': 0, 'maximo': 0}
+
         if rango_nominal['minimo']<=rango_real['minimo']:
             rango['minimo']=rango_nominal['minimo']
         else:
@@ -254,7 +265,7 @@ def salario_nominal_real(request, ano_inicial=None, ano_final=None):
             rango['maximo']=rango_nominal['maximo']
         else:
             rango['maximo']=rango_real['maximo']
-
+        
         for ano in range(rango['minimo'], rango['maximo']+1):
             fila = {'ano':ano ,'datos': []}
             try:
@@ -280,7 +291,10 @@ def salario_nominal_real(request, ano_inicial=None, ano_final=None):
                     fila['datos'].append(0)
             #variaciones del salario real 
             for key in salario_nominal.keys():
-                variacion = ((salario_nominal[key] - salario_real[key])/salario_nominal[key])*100
+                try:
+                    variacion = ((salario_nominal[key] - salario_real[key])/salario_nominal[key])*100
+                except TypeError:
+                    variacion = 0
                 fila['datos'].append(variacion)
             temp = dict.copy(fila)
             resultados.append(temp)
@@ -291,7 +305,11 @@ def salario_nominal_real(request, ano_inicial=None, ano_final=None):
     if fila.has_key('mes')==False:
         tope = len(resultados)-1
         for i in range(len(resultados[0]['datos'])):
-            variacion = ((float(resultados[tope]['datos'][i]) - float(resultados[0]['datos'][i]))/float(resultados[0]['datos'][i])*100) if resultados[0]['datos'][i]!= None else 0
+            try:
+                variacion = ((float(resultados[tope]['datos'][i]) - 
+                              float(resultados[0]['datos'][i]))/float(resultados[0]['datos'][i])*100) 
+            except:
+                variacion=0
             variaciones.append(variacion)
     
     dicc = {'datos': resultados, 'variaciones': variaciones,
