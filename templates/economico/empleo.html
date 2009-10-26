@@ -2,13 +2,13 @@
 {% block contenido %}
 <table>
     <tr>
-        <td>
+        <th>
             
-        </td>
+        </th>
         {%for ano in anos%}
-        <td>
+        <th class="sortable-numeric">
             <a href="/economico/empleo/{{ano}}/">{{ano}}</a>
-        </td>
+        </th>
         {%endfor%}
     </tr>
     <tr>

@@ -3,17 +3,17 @@
 {% block contenido %}
 <table>
     <tr>
-        <td>
+        <th class="sortable-numeric">
             Año
-        </td>
+        </th>
         {%for columna in columnas%}
-        <td>
+        <th class="sortable-numeric">
             {{columna}}
-        </td>
+        </th>
         {%endfor%}
     </tr>
     {%for fila in datos reversed%}
-    <tr>
+    <tr class="{%cycle alt, none%}">
         <td>
             <a href="/economico/canasta-basica/{{fila.ano}}/">{{fila.ano}}</a>
         </td>

@@ -3,20 +3,20 @@
 {% block contenido %}
 <table>
     <tr>
-        <td>
+        <th class="sortable-numeric">
             Año
-        </td>
-        <td>
+        </th>
+        <th class="sortable-numeric">
            Mes 
-        </td>
+        </th>
         {%for columna in columnas%}
-        <td>
+        <th class="sortable-numeric">
             {{columna}}
-        </td>
+        </th>
         {%endfor%}
     </tr>
     {%for fila in datos%}
-    <tr>
+    <tr class="{%cycle alt, none%}">
         <td>
             {{fila.ano}}
         </td>

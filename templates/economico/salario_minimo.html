@@ -3,22 +3,22 @@
 {% block contenido %}
 <table>
     <tr>
-        <td>
+        <th class="sortable-numeric">
             Año
-        </td>
+        </th>
         {%if tiene_mes%}
-        <td>
+        <th class="sortable-numeric">
             Mes
-        </td>
+        </th>
         {%endif%}
         {%for sector in sectores%}
-        <td>
+        <th class="sortable-numeric">
             {{sector.nombre}}
-        </td>
+        </th>
         {%endfor%}
     </tr>
     {%for fila in datos %}
-    <tr>
+    <tr class="{%cycle alt, none%}">
         <td>
             <a href="/economico/salario-minimo/{{fila.ano}}/">{{fila.ano}}</a>
         </td>
@@ -34,26 +34,28 @@
         {%endfor%}
     </tr>
     {%endfor%}
+    <tfoot>
     <tr>
         {%if tiene_mes%}
-        <td colspan="2">
+        <th colspan="2">
            promedio
-        </td>
+        </th>
         {%for promedio in promedios%}
-        <td>
+        <th>
             {{promedio|floatformat:2}}
-        </td>
+        </th>
         {%endfor%}
         {%else%}
-        <td>
+        <th>
             variaciones
-        </td>
+        </th>
         {%for variacion in variaciones%}
-        <td>
+        <th>
             {{variacion}}
-        </td>
+        </th>
         {%endfor%}
         {%endif%}
     </tr>
+</tfoot>
 </table>
 {% endblock %}

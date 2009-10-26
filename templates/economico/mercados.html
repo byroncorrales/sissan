@@ -3,24 +3,24 @@
 {{mensaje}}
 <table>
     <tr>
-        <td>
+        <th class="sortable-numeric">
             Año
-        </td>
-        <td>
+        </th>
+        <th class="sortable-numeric">
           Departamento 
-        </td>
-        <td>
+        </th>
+        <th class="sortable-numeric">
            Municipio 
-        </td>
-        <td>
+        </th>
+        <th class="sortable-numeric">
           Nombre 
-        </td>
-        <td>
+        </th>
+        <th class="sortable-numeric">
           Ubicación 
-        </td>
+        </th>
     </tr>
     {%for mercado in mercados%}
-    <tr>
+    <tr class="{%cycle alt, none%}">
         <td>
             {{mercado.ano}}
         </td>
