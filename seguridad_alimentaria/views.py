@@ -236,3 +236,11 @@ def disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
     dicc = {'disponibilidades': disponibilidades, 'consumos': consumos, 
             'productos': productos, 'var_disp': variacion_disp, 'var_consumos': variacion_consumo}
     return render_to_response('seguridad_alimentaria/disponibilidad.html', dicc)
+
+def apertura_comercial(request, ano_inicial=None, ano_final=None):
+    if ano_inicial and ano_final:
+        pass
+    elif ano_inicial:
+        pass
+    else:
+        pass

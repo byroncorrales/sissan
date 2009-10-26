@@ -24,5 +24,8 @@ urlpatterns = patterns('seguridad_alimentaria.views',
                         (r'^disponibilidad/(?P<ano_inicial>\d{4})/(?P<producto>\w+)/$', 'disponibilidad'),
                         (r'^disponibilidad/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/(?P<producto>\w+)/$', 'disponibilidad'),
                         (r'^disponibilidad/(?P<producto>\w+)/$', 'disponibilidad'),
-
+                        #Apertura comercial
+                        (r'^apertura-comercial/$', 'apertura_comercial'),
+                        (r'^apertura-comercial/(?P<ano_inicial>\d{4})/$', 'apertura_comercial'),
+                        (r'^apertura-comercial/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/$', 'apertura_comercial'),
                        )

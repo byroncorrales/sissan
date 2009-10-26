@@ -10,6 +10,14 @@ from django.db.models import Avg, Sum, Max, Min
 
 def poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
     departamental=None
+    departamentos = Departamento.objects.all()
+
+    anos = Poblacion.objects.all().aggregate(ano_minimo = Min('ano'),
+                                             ano_maximo = Max('ano'))
+    try:
+        rango_anos = range(int(anos['ano_minimo']), int(anos['ano_maximo'])+1)
+    except:
+        rango_anos = None
     if departamento:
         dept = get_object_or_404(Departamento, slug=departamento)
     else:
@@ -28,7 +36,7 @@ def poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
         datos = []
         if ano_inicial and ano_final:
             print ano_inicial, ano_final
-            for ano in range(int(ano_inicial), int(ano_final)):
+            for ano in range(int(ano_inicial), int(ano_final)+1):
                 resultado = Poblacion.objects.filter(ano=ano).aggregate(
                     hombre_urbano = Sum('hombre_urbano'),
                     mujer_urbano = Sum('mujer_urbano'),
@@ -52,9 +60,7 @@ def poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
             mensaje = "Poblacion (%s)" % ano_inicial
         else:
             try:
-                anos = Poblacion.objects.all().aggregate(ano_minimo = Min('ano'),
-                                                         ano_maximo = Max('ano'))
-                for ano in range(int(anos['ano_minimo']), int(anos['ano_maximo'])+1):
+                for ano in rango_anos:
                     resultado = Poblacion.objects.filter(ano=ano).aggregate(
                         hombre_urbano = Sum('hombre_urbano'),
                         mujer_urbano = Sum('mujer_urbano'),
@@ -90,5 +96,6 @@ def poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
             totales['total_hombre'] += cosito.total_hombre
             totales['total_mujer'] += cosito.total_mujer
 
-    dicc = {'totales': totales, 'datos': datos, 'mensaje': mensaje, 'departamental': departamental}
+    dicc = {'totales': totales, 'datos': datos, 'mensaje': mensaje, 
+            'departamental': departamental, 'anos': rango_anos, 'departamentos': departamentos}
     return render_to_response('demografico/poblacion.html', dicc)
