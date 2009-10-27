@@ -1,6 +1,50 @@
 {% extends 'base.html' %}
 {% block contenido %}
 {{mensaje}}
+<script type="text/javascript">
+$(document).ready(function () {
+    var departamento = document.getElementById("id_departamento");
+    var municipio = document.getElementById("id_municipio");
+    $("#id_departamento").change(function () {
+      var index = departamento.options.selectedIndex;
+      var id = departamento.options[index].value;
+      $.getJSON("/ajax/municipio/" + id +"/",
+      function(data){
+        municipio.options.length = 0;
+        //municipio.options[0] = new Option("--------");
+        for(i=0; i< data.length; i++){
+          municipio.options[i+1] = new Option(data[i][1], data[i][0]);
+        }
+      });
+    });
+});
+function procesarFormulario(form){
+    var dept = form.departamento.value;
+    var muni = form.municipio.value;
+    if (dept && muni){
+        var url = "/economico/mercados/municipio/" + muni + "/";
+    }else if(dept){
+        var url = "/economico/mercados/departamento/" + dept + "/";
+    }else{
+        var url="/economico/mercados/";
+    }
+    window.location = url;
+}
+</script>
+<form name="formulario" id="id_formulario" action="" method="GET">
+    Departamentos: 
+    <select id="id_departamento" name="departamento">
+        <option selected="selected"  value="">------</option>
+        {%for dept in departamentos%}
+        <option value="{{dept.id}}">{{dept.nombre}}</option>
+        {%endfor%}
+    </select>
+    Municipios: 
+    <select id="id_municipio" name="municipio">
+        <option selected="selected"  value="">------</option>
+    </select>
+        <input type="button" name="boton" id="id_boton" value="Filtrar"  onClick="procesarFormulario(this.form)"/>
+</form>
 <table>
     <tr>
         <th class="sortable-numeric">

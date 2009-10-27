@@ -1,6 +1,59 @@
 {% extends 'base.html' %}
 
 {% block contenido %}
+<script type="text/javascript">
+    function procesarFormulario(form){
+        var ano_inicial = form.ano_inicial.value;
+        var ano_final= form.ano_final.value;
+        var tipo = form.tipo.value;
+
+        if (ano_inicial && ano_final)
+        {
+            if(sector){
+                var url = "/economico/canasta-basica/" + ano_inicial + "-" + ano_final + "/tipo/" + tipo + "/";
+            }else{
+                var url = "/economico/canasta-basica/" + ano_inicial + "-" + ano_final + "/";
+            }
+        }else if(ano_inicial){
+            if(sector){
+                var url = "/economico/canasta-basica/" + ano_inicial + "/tipo/" + tipo + "/";
+            }else{
+                var url = "/economico/canasta-basica/" + ano_inicial + "/";
+            }
+        }else{
+            if(sector){
+                var url = "/economico/salario-minimo/sector/" + sector + "/";
+            }else{
+                var url = "/economico/salario-minimo/";
+            }
+        }
+        window.location = url;
+    }
+</script>
+<form name="formulario" id="id_formulario" method="GET" action="">
+    Año Inicial:
+    <select name="ano_inicial" id="id_ano_inicial">
+        <option value="">-------</option>
+        {%for ano in rango%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    Año Final:
+    <select name="ano_final" id="id_ano_final">
+        <option value="">-------</option>
+        {%for ano in rango reversed%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    Tipo:
+    <select name="tipo" id="id_tipo">
+        <option value="">-------</option>
+        {%for tipo in tipos_all%}
+        <option value="{{tipo.slug}}">{{tipo.nombre}}</option>
+        {%endfor%}
+    </select>
+    <input type="button" value="Filtar" name="boton" id="id_boton" onClick="procesarFormulario(this.form)"/>
+</form>
 <table>
     <tr>
         <th class="sortable-numeric">

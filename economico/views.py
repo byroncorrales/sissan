@@ -9,12 +9,18 @@ def index(request):
     return render_to_response('economico/index.html')
 
 def salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
+    rango = SalarioMinimo.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
+    sectores_all = Sector.objects.all()
+    try:
+        rango_anos = range(rango['minimo'], rango['maximo']+1)
+    except:
+        rango_anos=None
     mes = False
     if sector:
         sector = get_object_or_404(Sector, slug=sector)
         sectores = [sector]
     else:
-        sectores = Sector.objects.all()
+        sectores = sectores_all 
 
     resultados = [] 
     promedios = []
@@ -50,9 +56,8 @@ def salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
             temp = dict.copy(fila)
             resultados.append(temp)
     else:
-        rango = SalarioMinimo.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
         try:
-            for ano in range(rango['minimo'], rango['maximo']+1):
+            for ano in rango_anos:
                 fila = {'ano':ano ,'datos': []}
                 for sector in sectores:
                     try:
@@ -70,10 +75,13 @@ def salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
     if fila.has_key('mes')==False:
         tope = len(resultados)-1
         for i in range(len(sectores)):
-            variacion = ((float(resultados[tope]['datos'][i]) - float(resultados[0]['datos'][i]))/float(resultados[0]['datos'][i])*100) if resultados[0]['datos'][i]!= None else 0
+            try:
+                variacion = ((float(resultados[tope]['datos'][i]) - float(resultados[0]['datos'][i]))/float(resultados[0]['datos'][i])*100) if resultados[0]['datos'][i]!= None else 0
+            except:
+                variacion = 0
             variaciones.append("%.2f" % variacion)
     
-    dicc = {'datos': resultados, 'sectores': sectores, 
+    dicc = {'datos': resultados, 'sectores': sectores, 'rango': rango_anos, 'sectores_all': sectores_all,
             'variaciones': variaciones, 'tiene_mes': mes, 'promedios': promedios}
     return render_to_response('economico/salario_minimo.html', dicc)
 
@@ -123,12 +131,20 @@ def empleo(resquest, ano_inicial=None, ano_final=None):
 
 def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
     columnas = []
+    anos = CanastaBasica.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
+    try:
+        rango_anos = range(anos['minimo'], anos['maximo']+1)
+    except:
+        rango_anos = None
+
+    tipos_all = TipoCanastaBasica.objects.all()
+
     if tipo:
         tipo = get_object_or_404(TipoCanastaBasica, slug__iexact=tipo)
         tipos = [tipo]
     else:
-        tipos = TipoCanastaBasica.objects.all()
-    resultados = []
+        tipos = tipos_all
+        resultados = []
     template_name = 'economico/canasta_basica.html'
     if ano_inicial and ano_final:
         for ano in range(int(ano_inicial), int(ano_final)+1):
@@ -153,8 +169,7 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
         template_name='economico/canasta_basica_mes.html'
     else:
         try:
-            anos = CanastaBasica.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
-            for ano in range(anos['minimo'], anos['maximo']+1):
+            for ano in rango_anos:
                 filita = {'ano': ano, 'datos': []}
                 for tipo in tipos:
                     canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
@@ -165,21 +180,22 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
     
     for tipo in tipos:
         columnas.append(tipo.tipo)
-    dicc = {'datos':resultados, 'columnas': columnas}
+    dicc = {'datos':resultados, 'columnas': columnas, 'tipos_all': tipos_all, 'rango': rango_anos}
     return render_to_response(template_name, dicc)
 
 def mercados(request, departamento=None, municipio=None):
+    departamentos = Departamento.objects.all()
     if departamento:
-        datos = get_list_or_404(Mercado, departamento__slug=departamento)
+        datos = get_list_or_404(Mercado, departamento__id=departamento)
         mensaje = "Mercados del departamento de %s" % datos[0].departamento.nombre
     elif municipio:
-        datos = get_list_or_404(Mercado, municipio__slug=municipio)
+        datos = get_list_or_404(Mercado, municipio__id=municipio)
         mensaje = "Mercados del municipio de %s" % datos[0].municipio.nombre
     else:
         datos = Mercado.objects.all()
         mensaje="Todos los mercados"
 
-    dicc = {'mercados': datos, 'mensaje': mensaje}
+    dicc = {'mercados': datos, 'mensaje': mensaje, 'departamentos': departamentos}
     return render_to_response("economico/mercados.html", dicc)
 
 def salario_nominal_real(request, ano_inicial=None, ano_final=None):

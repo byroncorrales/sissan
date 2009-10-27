@@ -11,8 +11,8 @@ urlpatterns = patterns('economico.views',
                         (r'^economico/canasta-basica/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/tipo/(?P<tipo>\w+)/$', 'canasta_basica'),
                         #mercados
                         (r'^economico/mercados/$', 'mercados'),
-                        (r'^economico/mercados/departamento/(?P<departamento>[\w-]+)/$', 'mercados'),
-                        (r'^economico/mercados/municipio/(?P<municipio>[\w-]+)/$', 'mercados'),
+                        (r'^economico/mercados/departamento/(?P<departamento>\d+)/$', 'mercados'),
+                        (r'^economico/mercados/municipio/(?P<municipio>\d+)/$', 'mercados'),
                         #empleo
                         (r'^economico/empleo/$', 'empleo'),
                         (r'^economico/empleo/(?P<ano_inicial>\d{4})/$', 'empleo'),

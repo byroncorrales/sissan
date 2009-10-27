@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     (r'^', include('economico.urls')),
     (r'^seguridad-alimentaria/', include('seguridad_alimentaria.urls')),
     (r'^demografico/', include('demografico.urls')),
+    (r'^ajax/municipio/(?P<departamento>\d+)/$', 'lugar.views.get_municipios'),
 )
 
 if settings.DEBUG:

@@ -35,7 +35,6 @@ def poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
     else:
         datos = []
         if ano_inicial and ano_final:
-            print ano_inicial, ano_final
             for ano in range(int(ano_inicial), int(ano_final)+1):
                 resultado = Poblacion.objects.filter(ano=ano).aggregate(
                     hombre_urbano = Sum('hombre_urbano'),

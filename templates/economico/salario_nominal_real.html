@@ -1,6 +1,38 @@
 {% extends 'base.html' %}
-
 {% block contenido %}
+<script type="text/javascript">
+    function procesarFormulario(form){
+        var ano_inicial = form.ano_inicial.value;
+        var ano_final= form.ano_final.value;
+
+        if (ano_inicial && ano_final)
+        {
+            var url = "/economico/salario-nominal-real/" + ano_inicial + "-" + ano_final + "/";
+        }else if(ano_inicial){
+            var url = "/economico/salario-nominal-real/" + ano_inicial + "/";
+        }else{
+            var url = "/economico/salario-nominal-real/";
+        }
+        window.location = url;
+    }
+</script>
+<form name="formulario" id="id_formulario" method="GET" action="">
+    Año Inicial:
+    <select name="ano_inicial" id="id_ano_inicial">
+        <option value="">-------</option>
+        {%for ano in rango%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    Año Final:
+    <select name="ano_final" id="id_ano_final">
+        <option value="">-------</option>
+        {%for ano in rango reversed%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    <input type="button" value="Filtar" name="boton" id="id_boton" onClick="procesarFormulario(this.form)"/>
+</form>
 <table>
     <tr>
         <td>

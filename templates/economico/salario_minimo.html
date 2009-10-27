@@ -1,6 +1,60 @@
 {% extends 'base.html' %}
 
 {% block contenido %}
+<script type="text/javascript">
+    function procesarFormulario(form){
+        var ano_inicial = form.ano_inicial.value;
+        var ano_final= form.ano_final.value;
+        var sector = form.sector.value;
+
+        if (ano_inicial && ano_final)
+        {
+            if(sector){
+                var url = "/economico/salario-minimo/" + ano_inicial + "-" + ano_final + "/sector/" + sector + "/";
+            }else{
+                var url = "/economico/salario-minimo/" + ano_inicial + "-" + ano_final + "/";
+            }
+        }else if(ano_inicial){
+            if(sector){
+                var url = "/economico/salario-minimo/" + ano_inicial + "/sector/" + sector + "/";
+            }else{
+                var url = "/economico/salario-minimo/" + ano_inicial + "/";
+            }
+        }else{
+            if(sector){
+                var url = "/economico/salario-minimo/sector/" + sector + "/";
+            }else{
+                var url = "/economico/salario-minimo/";
+            }
+        }
+        window.location = url;
+    }
+</script>
+
+<form name="formulario" id="id_formulario" method="GET" action="">
+    Año Inicial:
+    <select name="ano_inicial" id="id_ano_inicial">
+        <option value="">-------</option>
+        {%for ano in rango%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    Año Final:
+    <select name="ano_final" id="id_ano_final">
+        <option value="">-------</option>
+        {%for ano in rango reversed%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    Sector:
+    <select name="sector" id="id_sector">
+        <option value="">-------</option>
+        {%for sector in sectores_all%}
+        <option value="{{sector.slug}}">{{sector.nombre}}</option>
+        {%endfor%}
+    </select>
+    <input type="button" value="Filtar" name="boton" id="id_boton" onClick="procesarFormulario(this.form)"/>
+</form>
 <table>
     <tr>
         <th class="sortable-numeric">
