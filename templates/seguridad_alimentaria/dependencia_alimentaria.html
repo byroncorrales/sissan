@@ -1,5 +1,57 @@
 {% extends 'base.html' %}
 {% block contenido %}
+<script type="text/javascript">
+    function procesarFormulario(form){
+        var ano_inicial = form.ano_inicial.value;
+        var ano_final = form.ano_final.value;
+        var producto = form.producto.value;
+
+        if (ano_inicial && ano_final){
+            if (producto){
+                var url = "/seguridad-alimentaria/dependencia-alimentaria/" + ano_inicial + "-" + ano_final + "/" + producto + "/";
+            }else{
+                var url = "/seguridad-alimentaria/dependencia-alimentaria/" + ano_inicial + "-" + ano_final + "/";
+            }
+        }else if(ano_inicial){
+            if (producto){
+                var url = "/seguridad-alimentaria/dependencia-alimentaria/" + ano_inicial +  "/" + producto + "/";
+            }else{
+                var url = "/seguridad-alimentaria/dependencia-alimentaria/" + ano_inicial + "/";
+            }
+        }else{
+            if (producto){
+                var url = "/seguridad-alimentaria/dependencia-alimentaria/" + producto + "/";
+            }else{
+                var url = "/seguridad-alimentaria/dependencia-alimentaria/";
+            }
+        }
+        window.location = url;
+    }
+</script>
+<form id="id_formulario" name="formulario" method="GET" action="">
+    Año Inicial: 
+    <select id="id_ano_inicial" name="ano_inicial">
+        <option value="">-----</option>
+        {%for ano in anos%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    Año Final:
+    <select id="id_ano_final" name="ano_final">
+        <option value="">-----</option>
+        {%for ano in anos reversed%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    Producto:
+    <select id="id_producto" name="producto">
+        <option value="">----</option>
+        {%for producto in productos_all%}
+        <option value="{{producto.slug}}">{{producto.nombre}}</option>
+        {%endfor%}
+    </select>
+    <input type="button" value="Filtrar" onClick="procesarFormulario(this.form)"/>
+</form>
 {{mensaje}}
 <table>
     <tr>

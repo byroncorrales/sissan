@@ -87,6 +87,11 @@ def salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
 
 def empleo(resquest, ano_inicial=None, ano_final=None):
     anos = []
+    anos = FuerzaTrabajo.objects.all().aggregate(minimo = Min('ano'), maximo = Max('ano'))
+    try:
+        rango_anos = range(rango_anos['minimo'], rango_anos['maximo']+1)
+    except:
+        rango_anos = None
     if ano_inicial and ano_final:
         #rango de aos
         datos = FuerzaTrabajo.objects.filter(ano__range=(ano_inicial, ano_final))
@@ -101,12 +106,6 @@ def empleo(resquest, ano_inicial=None, ano_final=None):
         #todos los anos
         #sacar ano max y ano min!
         datos = FuerzaTrabajo.objects.all()
-        rango_anos = datos.aggregate(minimo = Min('ano'), maximo = Max('ano'))
-        try:
-            anos = range(rango_anos['minimo'], rango_anos['maximo']+1)
-        except:
-            anos = None
-
         mensaje = 'Empleo ' 
 
     pea_poblacion = []  #PEA/Poblacion
@@ -126,7 +125,7 @@ def empleo(resquest, ano_inicial=None, ano_final=None):
     
     dicc = {'datos': datos, 'pea_poblacion': pea_poblacion, 
             'tasa_de_ocupacion': tasa_de_ocupacion, 'tasa_de_desempleo': tasa_de_desempleo,
-            'tasa_sub_empleo': tasa_sub_empleo, 'anos': anos, 'mensaje': mensaje}
+            'tasa_sub_empleo': tasa_sub_empleo, 'anos': rango_anos, 'mensaje': mensaje}
     return render_to_response("economico/empleo.html", dicc)
 
 def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):

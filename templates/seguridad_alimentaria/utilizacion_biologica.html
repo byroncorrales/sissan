@@ -1,5 +1,56 @@
 {% extends 'base.html' %}
 {% block contenido %}
+<script type="text/javascript">
+    function procesarFormulario(form){
+        var ano_inicial = form.ano_inicial.value;
+        var ano_final = form.ano_final.value;
+        var departamento  = form.departamento.value;
+
+        if (ano_inicial && ano_final){
+            if (departamento){
+                var url = "/seguridad-alimentaria/utilizacion-biologica/" + ano_inicial + "-" + ano_final + "/" + departamento + "/";
+            }else{
+                var url = "/seguridad-alimentaria/utilizacion-biologica/" + ano_inicial + "-" + ano_final + "/";
+            }
+        }else if(ano_inicial){
+            if (departamento){
+                var url = "/seguridad-alimentaria/utilizacion-biologica/" + ano_inicial +  "/" + departamento + "/";
+            }else{
+                var url = "/seguridad-alimentaria/utilizacion-biologica/" + ano_inicial + "/";
+            }
+        }else{
+            if (departamento){
+                var url = "/seguridad-alimentaria/utilizacion-biologica/" + departamento + "/";
+            }else{
+                var url = "/seguridad-alimentaria/utilizacion-biologica/";
+            }
+        }
+        window.location = url;
+    }
+</script>
+<form id="id_formulario" name="formulario" method="GET" action="">
+    Año Inicial: 
+    <select id="id_ano_inicial" name="ano_inicial">
+        <option value="">-----</option>
+        {%for ano in anos%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    Año Final:
+    <select id="id_ano_final" name="ano_final">
+        <option value="">-----</option>
+        {%for ano in anos reversed%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    Departamento:
+    <select id="id_departamento" name="departamento">
+        {%for departamento in departamentos%}
+        <option value="{{departamento.slug}}">{{departamento.nombre}}</option>
+        {%endfor%}
+    </select>
+    <input type="button" value="Filtrar" onClick="procesarFormulario(this.form)"/>
+</form>
 {{mensaje}}
 <table>
     <tr>

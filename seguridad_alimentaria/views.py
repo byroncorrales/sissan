@@ -9,6 +9,12 @@ def index(request):
 def dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
     productos = Producto.objects.all()
     resultados = []
+    try:
+        limites = DependenciaAlimentaria.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
+        rango_anos = range(limites['minimo'], limites['maximo']+1)
+    except:
+        rango_anos = None
+
     if ano_inicial and ano_final:
         for ano in range(int(ano_inicial), int(ano_final)+1):
             fila = {'ano': ano, 'datos': []}
@@ -31,8 +37,7 @@ def dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
         resultados.append(fila)
     else:
         try:
-            limites = DependenciaAlimentaria.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
-            for ano in range(limites['minimo'], limites['maximo']+1):
+            for ano in rango_anos: 
                 fila = {'ano': ano, 'datos': []}
                 for producto in productos:
                     try:
@@ -61,13 +66,18 @@ def dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
         variaciones.append("%.2f" % variacion) 
 
     dicc = {'resultados': resultados, 'variaciones': variaciones, 
-            'productos': productos}
+            'productos': productos, 'anos': rango_anos, 'productos_all': productos}
     return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
 
 def dependencia_alimentaria_producto(request, producto, ano_inicial=None, ano_final=None):
     producto = get_object_or_404(Producto, slug=producto)
     productos = [producto]
-    print productos
+    try:
+        limites = DependenciaAlimentaria.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
+        rango_anos = range(limites['minimo'], limites['maximo']+1)
+    except: 
+        rango_anos = None
+
     resultados = []
     if ano_inicial and ano_final:
         for ano in range(int(ano_inicial), int(ano_final)+1):
@@ -87,28 +97,41 @@ def dependencia_alimentaria_producto(request, producto, ano_inicial=None, ano_fi
             fila['datos'].append(0)
         resultados.append(fila)
     else:
-        limites = DependenciaAlimentaria.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
-        for ano in range(limites['minimo'], limites['maximo']+1):
-            fila = {'ano': ano, 'datos': []}
-            try:
-                dato = DependenciaAlimentaria.objects.get(ano=ano, producto=producto)
-                fila['datos'].append(dato.dependencia_alimentaria)
-            except:
-                fila['datos'].append(0)
-            resultados.append(fila) 
+        try:
+            for ano in rango_anos:
+                fila = {'ano': ano, 'datos': []}
+                try:
+                    dato = DependenciaAlimentaria.objects.get(ano=ano, producto=producto)
+                    fila['datos'].append(dato.dependencia_alimentaria)
+                except:
+                    fila['datos'].append(0)
+                resultados.append(fila) 
+        except: 
+            pass
 
     variaciones = []
     tope = len(resultados) - 1 
-    fila_inicial = resultados[0]['datos']
-    fila_final = resultados[tope]['datos']
-    variacion = ((fila_final[0]-fila_inicial[0])/fila_inicial[0])*100 if fila_inicial[0]!=0 else 0
-    variaciones.append("%.2f" % variacion) 
+    try:
+        fila_inicial = resultados[0]['datos']
+        fila_final = resultados[tope]['datos']
+        variacion = ((fila_final[0]-fila_inicial[0])/fila_inicial[0])*100 if fila_inicial[0]!=0 else 0
+        variaciones.append("%.2f" % variacion) 
+    except:
+        pass
 
-    dicc = {'resultados': resultados, 'variaciones': variaciones, 
-            'productos': productos}
+
+    dicc = {'resultados': resultados, 'variaciones': variaciones, 'anos': rango_anos, 
+            'productos': productos, 'productos_all': Producto.objects.all()}
     return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
 
 def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departamento=None):
+    departamentos = Departamento.objects.all()
+    try:
+        anos = UtilizacionBiologica.objects.all().aggregate(ano_minimo = Min('ano'), ano_maximo= Max('ano'))
+        rango_anos = range(anos['ano_minimo'], anos['ano_maximo']+1) 
+    except:
+        rango_anos = None
+
     if departamento:
         tiene_dep=True
         nombre_dep = get_object_or_404(Departamento, slug=departamento).nombre
@@ -144,8 +167,7 @@ def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departament
             mensaje = "Utilizacion Biologica (%s)" % (ano_inicial)
         else:
             try:
-                anos = UtilizacionBiologica.objects.all().aggregate(ano_minimo = Min('ano'), ano_maximo= Max('ano'))
-                for ano in range(anos['ano_minimo'], anos['ano_maximo']+1):
+                for ano in rango_anos:
                     resultado = UtilizacionBiologica.objects.filter(ano=ano).aggregate(
                         enfermedades_diarreicas=Sum('enfermedades_diarreicas'), 
                         enfermedades_respiratorias=Sum('enfermedades_respiratorias'))
@@ -164,7 +186,8 @@ def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departament
             variacion_eda = 0 
             variacion_ira = 0
     variaciones = {'variacion_eda': variacion_eda, 'variacion_ira': variacion_ira}
-    dicc = {'datos': datos, 'mensaje': mensaje, 'variaciones': variaciones, 'departamento': tiene_dep}
+    dicc = {'datos': datos, 'mensaje': mensaje, 'variaciones': variaciones, 'departamento': tiene_dep,
+            'departamentos':departamentos , 'anos':rango_anos }
     return render_to_response('seguridad_alimentaria/utilizacion_biologica.html', dicc)
 
 
@@ -174,12 +197,17 @@ def disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
     disponibilidades = []
     consumos = []
     columnas = []
+    productos_all = Producto.objects.all()
+    try:
+        anos = DependenciaAlimentaria.objects.all().aggregate(minimo = Min('ano'), maximo= Max('ano'))
+        rango_anos = range(anos['minimo'], anos['maximo']+1)
+    except:
+        rango_anos = None
     if producto:
         producto = get_object_or_404(Producto, slug=producto)
         productos = [producto]
     else:
-        productos = Producto.objects.all()
-
+        productos = productos_all 
     if ano_inicial and ano_final:
         for ano in range(int(ano_inicial), int(ano_final)+1):
             poblacion = Poblacion.objects.get(ano=ano)
@@ -207,8 +235,7 @@ def disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
         consumos.append(fila_consumo)
     else:
         try:
-            anos = DependenciaAlimentaria.objects.all().aggregate(minimo = Min('ano'), maximo= Max('ano'))
-            for ano in range(anos['minimo'], anos['maximo']+1):
+            for ano in rango_anos:
                 poblacion = Poblacion.objects.get(ano=ano)
                 fila_disp = {'ano': ano, 'datos': []}
                 fila_consumo = {'ano': ano, 'datos': []}
@@ -228,13 +255,17 @@ def disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
     variacion_consumo = []
     tope = len(consumos)-1
     for i in range(len(productos)):
-        var_disp = ((float(disponibilidades[tope]['datos'][i]) - float(disponibilidades[0]['datos'][i]))/float(disponibilidades[0]['datos'][i]))*100
-        variacion_disp.append("%.2f" % var_disp)
-        var_consumos = ((float(consumos[tope]['datos'][i]) - float(consumos[0]['datos'][i]))/float(consumos[0]['datos'][i]))*100
-        variacion_consumo.append("%.2f" % var_consumos)
+        try:
+            var_disp = ((float(disponibilidades[tope]['datos'][i]) - float(disponibilidades[0]['datos'][i]))/float(disponibilidades[0]['datos'][i]))*100
+            variacion_disp.append("%.2f" % var_disp)
+            var_consumos = ((float(consumos[tope]['datos'][i]) - float(consumos[0]['datos'][i]))/float(consumos[0]['datos'][i]))*100
+            variacion_consumo.append("%.2f" % var_consumos)
+        except:
+            pass
             
     dicc = {'disponibilidades': disponibilidades, 'consumos': consumos, 
-            'productos': productos, 'var_disp': variacion_disp, 'var_consumos': variacion_consumo}
+            'productos': productos, 'var_disp': variacion_disp, 'var_consumos': variacion_consumo, 
+            'anos': rango_anos, 'productos_all': productos_all}
     return render_to_response('seguridad_alimentaria/disponibilidad.html', dicc)
 
 def apertura_comercial(request, ano_inicial=None, ano_final=None):
