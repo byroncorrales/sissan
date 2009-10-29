@@ -269,9 +269,44 @@ def disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
     return render_to_response('seguridad_alimentaria/disponibilidad.html', dicc)
 
 def apertura_comercial(request, ano_inicial=None, ano_final=None):
+    try:
+        anos = AperturaComercial.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
+        rango_anos = range(anos['minimo'], anos['maximo']+1)
+    except:
+        rango_anos = None
+
+    resultados = [] 
+
     if ano_inicial and ano_final:
-        pass
+        for ano in range(int(ano_inicial), int(ano_final)+1):
+            fila = {'ano': ano, 'tasa': None}
+            apertura = AperturaComercial.objects.get(ano=ano)
+            tasa = ((apertura.exportaciones/apertura.pib) + (apertura.importaciones/apertura.pib)) / 100
+            fila['tasa'] = tasa
+            resultados.append(fila)
     elif ano_inicial:
-        pass
+        fila = {'ano': ano_inicial, 'tasa': None}
+        apertura = AperturaComercial.objects.get(ano=ano_inicial)
+        tasa = ((apertura.exportaciones/apertura.pib) + (apertura.importaciones/apertura.pib)) / 100
+        fila['tasa'] = tasa
+        resultados.append(fila)
     else:
-        pass
+        try:
+            for ano in rango_anos:
+                fila = {'ano': ano, 'tasa': None}
+                apertura = AperturaComercial.objects.get(ano=ano)
+                tasa = ((apertura.exportaciones/apertura.pib) + (apertura.importaciones/apertura.pib)) / 100
+                fila['tasa'] = tasa
+                resultados.append(fila)
+        except:
+            pass
+
+    #variaciones
+    try:
+        tope = len(resultados) - 1
+        variacion = ((resultados[tope]['tasa'] - resultados[0]['tasa'])/resultados[0]['tasa'])*100 if resultados[0]['tasa']!=0 else 100
+    except:
+        variacion = 0
+
+    dicc = {'resultados': resultados, 'anos': rango_anos, 'variacion': variacion}
+    return render_to_response('seguridad_alimentaria/apertura_comercial.html', dicc)

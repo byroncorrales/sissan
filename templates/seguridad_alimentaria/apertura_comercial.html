@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block contenido %}
+<script type="text/javascript">
+    function procesarFormulario(form){
+        var ano_inicial = form.ano_inicial.value;
+        var ano_final = form.ano_final.value;
+
+        if (ano_inicial && ano_final){
+            var url = "/seguridad-alimentaria/apertura-comercial/" + ano_inicial + "-" + ano_final + "/";
+        }else if(ano_inicial){
+            var url = "/seguridad-alimentaria/apertura-comercial/" + ano_inicial + "/";
+        }else{
+            var url = "/seguridad-alimentaria/apertura-comercial/";
+        }
+        window.location = url;
+    }
+</script>
+<form id="id_formulario" name="formulario" method="GET" action="">
+    Año Inicial: 
+    <select id="id_ano_inicial" name="ano_inicial">
+        <option value="">-----</option>
+        {%for ano in anos%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    Año Final:
+    <select id="id_ano_final" name="ano_final">
+        <option value="">-----</option>
+        {%for ano in anos reversed%}
+        <option value="{{ano}}">{{ano}}</option>
+        {%endfor%}
+    </select>
+    <input type="button" value="Filtrar" onClick="procesarFormulario(this.form)"/>
+</form>
+{{mensaje}}
+<table>
+    <tr>
+        <td>
+            Año
+        </td>
+        <td>
+            Tasa
+        </td>
+    </tr>
+    {%for dato in resultados reversed%}
+    <tr>
+        <td>
+            <a href="/seguridad-alimentaria/apertura-comercial/{{dato.ano}}"/> {{dato.ano}} </a>
+        </td>
+        <td>
+            {{dato.tasa|floatformat:2}}
+        </td>
+    </tr>
+    {%endfor%}
+    <tr>
+        <td>
+            Variación
+        </td>
+        <td>
+            {{variacion|floatformat:2}}%
+        </td>
+    </tr>
+</table>
+{% endblock %}

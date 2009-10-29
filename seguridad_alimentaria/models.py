@@ -14,21 +14,6 @@ class Producto(models.Model):
     def __unicode__(self):
         return self.nombre
 
-#class DisponibilidadConsumo(models.Model):
-#    ano = models.IntegerField("Ano", max_length=4, choices=ANO_CHOICES)
-#    producto = models.ForeignKey(Producto)
-#    disponibilidad = models.DecimalField(max_digits=10, decimal_places=2)
-#    consumo_aparente= models.DecimalField(max_digits=10, decimal_places=2)
-
- #   def __unicode__(self):
- #      return "%s (%s)" % (self.producto.nombre, self.ano)
-
- #   class Meta:
- #       unique_together=['ano','producto']
- #       ordering=['ano', 'producto']
- #       verbose_name = "Disponibilidad y consumo aparente"
- #       verbose_name_plural = verbose_name
-
 class DependenciaAlimentaria(models.Model):
     ano = models.IntegerField("Ano", max_length=4, choices=ANO_CHOICES)
     producto = models.ForeignKey(Producto)
@@ -87,3 +72,17 @@ class UtilizacionBiologica(models.Model):
         ordering=['-ano']
         verbose_name = "Utilizacion Biologica"
         verbose_name_plural = verbose_name
+
+class AperturaComercial(models.Model):
+    ano = models.IntegerField("Ano", max_length=4, choices=ANO_CHOICES, unique=True)
+    pib = models.DecimalField("PIB", decimal_places=2, max_digits=10)
+    exportaciones = models.DecimalField("Exportaciones", decimal_places=2, max_digits=10)
+    importaciones = models.DecimalField("Exportaciones", decimal_places=2, max_digits=10)
+
+    def __unicode__(self):
+        return "Apertura Comercial (%s)" % self.ano
+
+    class Meta:
+        ordering=['-ano']
+        verbose_name = "Apertura Comercial"
+        verbose_name_plural = "Aperturas Comerciales"
