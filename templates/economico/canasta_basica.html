@@ -72,10 +72,20 @@
         </td>
         {%for coso in fila.datos%}
         <td>
-            {{coso}}
+            {{coso|floatformat:2}}
         </td>
         {%endfor%}
     </tr>
     {%endfor%}
+    <tr>
+        <td>
+            Variaciones
+        </td>
+        {%for variacion in variaciones%}
+        <td>
+            {{variacion|floatformat:2}}%
+        </td>
+        {%endfor%}
+    </tr>
 </table>
 {% endblock %}

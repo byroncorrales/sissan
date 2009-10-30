@@ -150,7 +150,7 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
         for ano in range(int(ano_inicial), int(ano_final)+1):
             filita = {'ano': ano, 'datos': []}
             for tipo in tipos:
-                canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
+                canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Avg('costo'))
                 filita['datos'].append(canastas['costo'])
             resultados.append(filita)
     elif ano_inicial:
@@ -172,15 +172,27 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
             for ano in rango_anos:
                 filita = {'ano': ano, 'datos': []}
                 for tipo in tipos:
-                    canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Sum('costo'))
+                    canastas = CanastaBasica.objects.filter(ano=ano, tipo=tipo).aggregate(costo=Avg('costo'))
                     filita['datos'].append(canastas['costo'])
                 resultados.append(filita)
         except TypeError:
             pass
     
+    variaciones = [] 
     for tipo in tipos:
         columnas.append(tipo.tipo)
-    dicc = {'datos':resultados, 'columnas': columnas, 'tipos_all': tipos_all, 'rango': rango_anos}
+
+    tope = len(resultados)-1
+    for i in range(len(tipos)):
+        #variaciones
+        try:
+            variacion = ((resultados[tope]['datos'][i] - resultados[0]['datos'][i])/ resultados[0]['datos'][i])*100
+            variaciones.append(variacion)
+        except:
+            variaciones.append(0)
+        
+    dicc = {'datos':resultados, 'columnas': columnas, 'variaciones': variaciones,
+            'tipos_all': tipos_all, 'rango': rango_anos}
     return render_to_response(template_name, dicc)
 
 def mercados(request, departamento=None, municipio=None):
