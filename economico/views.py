@@ -143,7 +143,8 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
         tipos = [tipo]
     else:
         tipos = tipos_all
-        resultados = []
+
+    resultados = []
     template_name = 'economico/canasta_basica.html'
     if ano_inicial and ano_final:
         for ano in range(int(ano_inicial), int(ano_final)+1):

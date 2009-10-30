@@ -9,22 +9,22 @@
 
         if (ano_inicial && ano_final)
         {
-            if(sector){
+            if(tipo){
                 var url = "/economico/canasta-basica/" + ano_inicial + "-" + ano_final + "/tipo/" + tipo + "/";
             }else{
                 var url = "/economico/canasta-basica/" + ano_inicial + "-" + ano_final + "/";
             }
         }else if(ano_inicial){
-            if(sector){
+            if(tipo){
                 var url = "/economico/canasta-basica/" + ano_inicial + "/tipo/" + tipo + "/";
             }else{
                 var url = "/economico/canasta-basica/" + ano_inicial + "/";
             }
         }else{
-            if(sector){
-                var url = "/economico/salario-minimo/sector/" + sector + "/";
+            if(tipo){
+                var url = "/economico/canasta-basica/tipo/" + tipo + "/";
             }else{
-                var url = "/economico/salario-minimo/";
+                var url = "/economico/canasta-basica/";
             }
         }
         window.location = url;
@@ -49,7 +49,7 @@
     <select name="tipo" id="id_tipo">
         <option value="">-------</option>
         {%for tipo in tipos_all%}
-        <option value="{{tipo.slug}}">{{tipo.nombre}}</option>
+        <option value="{{tipo.slug}}">{{tipo.tipo}}</option>
         {%endfor%}
     </select>
     <input type="button" value="Filtar" name="boton" id="id_boton" onClick="procesarFormulario(this.form)"/>

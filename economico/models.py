@@ -63,7 +63,7 @@ class CanastaBasica(models.Model):
     ano = models.IntegerField("Año", max_length=4, choices=ANO_CHOICES)
     tipo = models.ForeignKey(TipoCanastaBasica, null=True, blank=True)
     mes = models.IntegerField("Mes", max_length=2, choices=MES_CHOICES)
-    costo = models.DecimalField("Costo", max_digits=10, decimal_places=2)
+    costo = models.DecimalField("Costo", max_digits=14, decimal_places=2)
 
     def __unicode__(self):
         return "Canasta Basica %s-%s" % (self.mes, self.ano)
