@@ -1,14 +1,17 @@
 from django.shortcuts import render_to_response, get_object_or_404
+from django.http import HttpResponse
 from demografico.models import Poblacion
 from lugar.models import Departamento
 from django.db.models import Avg, Sum, Max, Min
+from utils.pygooglechart import PieChart3D
+from django.utils import simplejson
 #import datetime
 
 #CHOICESANO=[]
 #for i in range (datetime.date.today().year,1989,-1):
 #	CHOICESANO.append((i,str(i)))
 
-def poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
+def __poblacion__(request, ano_inicial=None, ano_final=None, departamento=None):
     departamental=None
     departamentos = Departamento.objects.all()
 
@@ -97,4 +100,33 @@ def poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
 
     dicc = {'totales': totales, 'datos': datos, 'mensaje': mensaje, 
             'departamental': departamental, 'anos': rango_anos, 'departamentos': departamentos}
+    return dicc 
+
+def poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
+    dicc = __poblacion__(ano_inicial, ano_final, departamento)
     return render_to_response('demografico/poblacion.html', dicc)
+
+def grafo_poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
+    datos = __poblacion__(ano_inicial, ano_final, departamento)
+    graph = PieChart3D(600,350)
+    graph.set_colours([ 'FFBC13','22A410','E6EC23','2B2133','BD0915','3D43BD'])
+    numeros = datos['totales'].values()
+    leyendas = [key.replace('_', ' ') for key in datos['totales'].keys()]
+    graph.add_data(numeros)
+    graph.set_legend(leyendas)
+    porcentajes = saca_porcentajes(numeros)
+    graph.set_pie_labels(porcentajes)
+    graph.set_legend_position("b")
+    graph.set_title(datos['mensaje'])
+
+    dict = {'url': graph.get_url()}
+    return HttpResponse(simplejson.dumps(dict), mimetype='application/javascript')
+
+def saca_porcentajes(values):
+    """sumamos los valores y devolvemos una lista con su porcentaje"""
+    total = sum(values)
+    valores = [] #lista para anotar los indices en los que da cero el porcentaje
+    for i in range(len(values)):
+        porcentaje = (float(values[i])/total)*100
+        valores.append("%.2f" % porcentaje + '%') 
+    return valores
