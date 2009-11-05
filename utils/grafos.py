@@ -1,17 +1,26 @@
 from pygooglechart import PieChart3D, PieChart2D 
 from pygooglechart import StackedHorizontalBarChart, StackedVerticalBarChart
+from pygooglechart import GroupedHorizontalBarChart, GroupedVerticalBarChart
 from pygooglechart import Axis, SimpleLineChart
 from django.utils import simplejson
 from django.http import HttpResponse
 
+pie_types = [PieChart3D, PieChart2D]
+bar_types = [StackedHorizontalBarChart, StackedVerticalBarChart,
+             GroupedHorizontalBarChart, GroupedVerticalBarChart]
+line_types = [SimpleLineChart]
 def make_graph(data, legends, message=None, 
                axis_labels=None, steps=4, return_json = True,
-               type=PieChart3D, size=(600, 350)):
+               type=PieChart3D, size=(600, 350), multiline=False):
 
-    if (type==PieChart3D or type==PieChart2D):
+    if (type in pie_types):
         graph = __pie_graphic__(data, legends, size, type)
-    elif (type==StackedHorizontalBarChart or type==StackedVerticalBarChart):
-        graph = __bar_graphic__(data, legends, type, size)
+    elif (type in bar_types):
+        graph = __bar_graphic__(data, legends, axis_labels, size,
+                               steps, type, multiline)
+    elif(type in line_types):
+        graph = __line_strip_graphic__(data, legends, axis_labels,
+                                       size, steps, type, multiline)
 
     graph.set_title(message)
 
@@ -33,29 +42,64 @@ def __pie_graphic__(data, legends, size, type=PieChart3D):
 
     return graph
 
-def __bar_graphic__(data, legends, axis_labels, size,  type=StackedVerticalBarChart):
-    #if type==StackedHorizontalBarChart:
-    #    graph = StackedHorizontalBarChart(size[0], size[1], x_range=range)
-    #else
-    #    graph = StackedVerticalBarChart(size[0], size[1], y_range=range)
+def __bar_graphic__(data, legends, axis_labels, size, steps,  
+                    type=StackedVerticalBarChart, multiline=False):
     
-    #graph.set_colours(['FF0000', '00FF00'])
-    #graph.set_bar_width(5)
-    #graph.set_bar_spacing(5)
-    #graph.set_legend(legends)
-    #graph.set_axis_labels(Axis.BOTTOM, axis_labels)
+    if multiline:
+        max_values = []
+        min_values = [] 
+        for row in data:
+            max_values.append(max(row))
+            min_values.append(min(row))
+        max_value = max(max_values)
+        min_value = min(min_values)
+    else:
+        max_value = max(data)
+        min_value = min(data)
 
-    #for fila in data:
-    #    if (type(foo)==type([])):
-    #        graph.add_data(fila)
-    #    else:
-    #        #raise exception
-    #        pass
-    pass
+    step = ((max_value*1.25)-(min_value*0.75))/steps
+    left_axis = range(int(min_value*0.75), int(max_value*1.25), int(step))
+    left_axis[0]=''
+
+    if type==StackedHorizontalBarChart:
+        graph = StackedHorizontalBarChart(size[0], size[1], x_range=(0, max_value*1.25))
+        graph.set_axis_labels(Axis.BOTTOM, left_axis)
+        graph.set_axis_labels(Axis.LEFT, axis_labels)
+    elif type==StackedVerticalBarChart:
+        graph = StackedVerticalBarChart(size[0], size[1], y_range=(0, max_value*1.25))
+        graph.set_axis_labels(Axis.LEFT, left_axis)
+        graph.set_axis_labels(Axis.BOTTOM, axis_labels)
+    elif type==GroupedHorizontalBarChart:
+        graph = GroupedHorizontalBarChart(size[0], size[1], x_range=(0, max_value*1.25))
+        graph.set_axis_labels(Axis.BOTTOM, left_axis)
+        graph.set_axis_labels(Axis.LEFT, axis_labels)
+        graph.set_bar_spacing(5)
+    elif type==GroupedVerticalBarChart:
+        graph = GroupedVerticalBarChart(size[0], size[1], y_range=(0, max_value*1.25))
+        graph.set_axis_labels(Axis.LEFT, left_axis)
+        graph.set_axis_labels(Axis.BOTTOM, axis_labels)
+        graph.set_bar_spacing(5)
+    else:
+        pass #raise exception
+
+
+    if multiline:
+        for fila in data:
+            graph.add_data(fila)
+    else:
+        graph.add_data(data)
+    
+    graph.set_colours([ 'FFBC13','22A410','E6EC23','2B2133','BD0915','3D43BD'])
+    graph.set_bar_width(40)
+    graph.set_legend(legends)
+    graph.set_legend_position('b')
+    
+    
+    return graph
 
 def __line_strip_graphic__(data, legends, axis_labels, size, steps, 
-                           type=SimpleLineChart, multi_line=False):
-    if multi_line:
+                           type=SimpleLineChart, multiline=False):
+    if multiline:
         max_values = []
         min_values = [] 
         for row in data:
@@ -69,7 +113,7 @@ def __line_strip_graphic__(data, legends, axis_labels, size, steps,
 
     chart = SimpleLineChart(size[0], size[1], y_range=[0, max_y*1.15])
 
-    if multi_line:
+    if multiline:
         for row in data:
             chart.add_data(row)
     else:
