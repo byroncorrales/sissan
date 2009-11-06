@@ -7,7 +7,7 @@ def index(request):
     pass
 
 def dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
-    dicc = __dependencia_alimentaria__(request, ano_inicial=None, ano_final=None)
+    dicc = __dependencia_alimentaria__(request, ano_inicial, ano_final)
     return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
 
 def __dependencia_alimentaria__(request, ano_inicial=None, ano_final=None):
@@ -74,7 +74,7 @@ def __dependencia_alimentaria__(request, ano_inicial=None, ano_final=None):
     return dicc
 
 def dependencia_alimentaria_producto(request, producto, ano_inicial=None, ano_final=None):
-    dicc = __dependencia_alimentaria_producto__(request, producto, ano_inicial=None, ano_final=None)
+    dicc = __dependencia_alimentaria_producto__(request, producto, ano_inicial, ano_final)
     return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
 
 def __dependencia_alimentaria_producto__(request, producto, ano_inicial=None, ano_final=None):
@@ -133,7 +133,7 @@ def __dependencia_alimentaria_producto__(request, producto, ano_inicial=None, an
     return dicc
 
 def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departamento=None):
-    dicc = __utilizacion_biologica__(request, ano_inicial=None, ano_final=None, departamento=None)
+    dicc = __utilizacion_biologica__(request, ano_inicial, ano_final, departamento)
     return render_to_response('seguridad_alimentaria/utilizacion_biologica.html', dicc)
 
 def __utilizacion_biologica__(request, ano_inicial=None, ano_final=None, departamento=None):
@@ -204,7 +204,7 @@ def __utilizacion_biologica__(request, ano_inicial=None, ano_final=None, departa
 
 
 def disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
-    dicc = __disponibilidad__(request, ano_inicial=None, ano_final=None, producto=None)
+    dicc = __disponibilidad__(request, ano_inicial, ano_final, producto)
     return render_to_response('seguridad_alimentaria/disponibilidad.html', dicc)
 
 def __disponibilidad__(request, ano_inicial=None, ano_final=None, producto=None):
@@ -285,7 +285,7 @@ def __disponibilidad__(request, ano_inicial=None, ano_final=None, producto=None)
     return dicc
 
 def apertura_comercial(request, ano_inicial=None, ano_final=None):
-    dicc = __apertura_comercial__(request, ano_inicial=None, ano_final=None)
+    dicc = __apertura_comercial__(request, ano_inicial, ano_final)
     return render_to_response('seguridad_alimentaria/apertura_comercial.html', dicc)
 
 def __apertura_comercial__(request, ano_inicial=None, ano_final=None):

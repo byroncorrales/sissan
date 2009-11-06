@@ -90,7 +90,7 @@ def __salario_minimo__(request, ano_inicial=None, ano_final=None, sector=None):
     return dicc
 
 def empleo(resquest, ano_inicial=None, ano_final=None):
-    dicc = __empleo__(resquest, ano_inicial=None, ano_final=None)
+    dicc = __empleo__(resquest, ano_inicial, ano_final)
     return render_to_response("economico/empleo.html", dicc)
     
 def __empleo__(resquest, ano_inicial=None, ano_final=None):
@@ -137,7 +137,9 @@ def __empleo__(resquest, ano_inicial=None, ano_final=None):
     return dicc
 
 def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
-    dicc = __canasta_basica__(request, tipo=None, ano_inicial=None, ano_final=None)
+    dicc = __canasta_basica__(request, tipo, ano_inicial, ano_final)
+    template_name = dicc['template']
+    del(dicc['template'])
     return render_to_response(template_name, dicc)
     
 def __canasta_basica__(request, tipo=None, ano_inicial=None, ano_final=None):
@@ -204,11 +206,11 @@ def __canasta_basica__(request, tipo=None, ano_inicial=None, ano_final=None):
             variaciones.append(0)
         
     dicc = {'datos':resultados, 'columnas': columnas, 'variaciones': variaciones,
-            'tipos_all': tipos_all, 'rango': rango_anos}
+            'tipos_all': tipos_all, 'rango': rango_anos, 'template': template_name}
     return dicc
 
 def mercados(request, departamento=None, municipio=None):
-    dicc = __mercados__(request, departamento=None, municipio=None)
+    dicc = __mercados__(request, departamento, municipio)
     return render_to_response("economico/mercados.html", dicc)
 
 def __mercados__(request, departamento=None, municipio=None):
@@ -227,7 +229,7 @@ def __mercados__(request, departamento=None, municipio=None):
     return dicc
 
 def salario_nominal_real(request, ano_inicial=None, ano_final=None):
-    dicc = __salario_nominal_real__(request, ano_inicial=None, ano_final=None)
+    dicc = __salario_nominal_real__(request, ano_inicial, ano_final)
     return render_to_response('economico/salario_nominal_real.html', dicc)
 
 def __salario_nominal_real__(request, ano_inicial=None, ano_final=None):

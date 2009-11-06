@@ -15,7 +15,6 @@ from utils import grafos
 def __poblacion__(request, ano_inicial=None, ano_final=None, departamento=None):
     departamental=None
     departamentos = Departamento.objects.all()
-    print ano_inicial, ano_final, departamento
     anos = Poblacion.objects.all().aggregate(ano_minimo = Min('ano'),
                                              ano_maximo = Max('ano'))
     try:
@@ -24,7 +23,6 @@ def __poblacion__(request, ano_inicial=None, ano_final=None, departamento=None):
         rango_anos = None
 
     if departamento:
-        print 'entro ahi'
         dept = get_object_or_404(Departamento, slug=departamento)
     else:
         dept=None
