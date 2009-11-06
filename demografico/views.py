@@ -3,8 +3,9 @@ from django.http import HttpResponse
 from demografico.models import Poblacion
 from lugar.models import Departamento
 from django.db.models import Avg, Sum, Max, Min
-from utils.pygooglechart import PieChart3D
+from utils.pygooglechart import SimpleLineChart 
 from django.utils import simplejson
+from utils import grafos
 #import datetime
 
 #CHOICESANO=[]
@@ -14,14 +15,16 @@ from django.utils import simplejson
 def __poblacion__(request, ano_inicial=None, ano_final=None, departamento=None):
     departamental=None
     departamentos = Departamento.objects.all()
-
+    print ano_inicial, ano_final, departamento
     anos = Poblacion.objects.all().aggregate(ano_minimo = Min('ano'),
                                              ano_maximo = Max('ano'))
     try:
         rango_anos = range(int(anos['ano_minimo']), int(anos['ano_maximo'])+1)
     except:
         rango_anos = None
+
     if departamento:
+        print 'entro ahi'
         dept = get_object_or_404(Departamento, slug=departamento)
     else:
         dept=None
@@ -103,30 +106,31 @@ def __poblacion__(request, ano_inicial=None, ano_final=None, departamento=None):
     return dicc 
 
 def poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
-    dicc = __poblacion__(ano_inicial, ano_final, departamento)
+    dicc = __poblacion__(request, ano_inicial, ano_final, departamento)
     return render_to_response('demografico/poblacion.html', dicc)
 
 def grafo_poblacion(request, ano_inicial=None, ano_final=None, departamento=None):
-    datos = __poblacion__(ano_inicial, ano_final, departamento)
-    graph = PieChart3D(600,350)
-    graph.set_colours([ 'FFBC13','22A410','E6EC23','2B2133','BD0915','3D43BD'])
-    numeros = datos['totales'].values()
-    leyendas = [key.replace('_', ' ') for key in datos['totales'].keys()]
-    graph.add_data(numeros)
-    graph.set_legend(leyendas)
-    porcentajes = saca_porcentajes(numeros)
-    graph.set_pie_labels(porcentajes)
-    graph.set_legend_position("b")
-    graph.set_title(datos['mensaje'])
+    datos = __poblacion__(request, ano_inicial, ano_final, departamento)
+    if not datos['departamental']:
+        hombre_urbano = [foo['hombre_urbano'] for foo in datos['datos']]
+        mujer_urbano = [foo['mujer_urbano'] for foo in datos['datos']]
+        mujer_rural = [foo['mujer_rural'] for foo in datos['datos']]
+        hombre_rural = [foo['hombre_rural'] for foo in datos['datos']]
+        
+    else:
+        hombre_urbano = [foo.hombre_urbano for foo in datos['datos']]
+        mujer_urbano = [foo.mujer_urbano for foo in datos['datos']]
+        hombre_rural = [foo.hombre_rural for foo in datos['datos']]
+        mujer_rural = [foo.mujer_rural for foo in datos['datos']]
 
-    dict = {'url': graph.get_url()}
-    return HttpResponse(simplejson.dumps(dict), mimetype='application/javascript')
-
-def saca_porcentajes(values):
-    """sumamos los valores y devolvemos una lista con su porcentaje"""
-    total = sum(values)
-    valores = [] #lista para anotar los indices en los que da cero el porcentaje
-    for i in range(len(values)):
-        porcentaje = (float(values[i])/total)*100
-        valores.append("%.2f" % porcentaje + '%') 
-    return valores
+    numeros = [hombre_urbano, mujer_urbano, hombre_rural, mujer_rural]
+    if ano_inicial and ano_final:
+        axis = range(int(ano_inicial), int(ano_final)+1)
+    elif ano_inicial:
+        axis=ano_inicial
+    else:
+        axis = datos['anos']
+    leyendas = ['Hombre Urbano', 'Mujer Urbana', 'Hombre Rural', 'Mujer Rural']
+    
+    return grafos.make_graph(numeros, leyendas, datos['mensaje'],
+                             axis, type=SimpleLineChart, multiline=True, steps=6, size=(600,500))
