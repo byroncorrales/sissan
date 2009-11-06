@@ -9,6 +9,10 @@ def index(request):
     return render_to_response('economico/index.html')
 
 def salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
+    dicc = __salario_minimo__(request, ano_inicial, ano_final, sector)
+    return render_to_response('economico/salario_minimo.html', dicc)
+    
+def __salario_minimo__(request, ano_inicial=None, ano_final=None, sector=None):
     rango = SalarioMinimo.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
     sectores_all = Sector.objects.all()
     try:
@@ -83,9 +87,13 @@ def salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
     
     dicc = {'datos': resultados, 'sectores': sectores, 'rango': rango_anos, 'sectores_all': sectores_all,
             'variaciones': variaciones, 'tiene_mes': mes, 'promedios': promedios}
-    return render_to_response('economico/salario_minimo.html', dicc)
+    return dicc
 
 def empleo(resquest, ano_inicial=None, ano_final=None):
+    dicc = __empleo__(resquest, ano_inicial=None, ano_final=None)
+    return render_to_response("economico/empleo.html", dicc)
+    
+def __empleo__(resquest, ano_inicial=None, ano_final=None):
     anos = []
     anos = FuerzaTrabajo.objects.all().aggregate(minimo = Min('ano'), maximo = Max('ano'))
     try:
@@ -126,9 +134,13 @@ def empleo(resquest, ano_inicial=None, ano_final=None):
     dicc = {'datos': datos, 'pea_poblacion': pea_poblacion, 
             'tasa_de_ocupacion': tasa_de_ocupacion, 'tasa_de_desempleo': tasa_de_desempleo,
             'tasa_sub_empleo': tasa_sub_empleo, 'anos': rango_anos, 'mensaje': mensaje}
-    return render_to_response("economico/empleo.html", dicc)
+    return dicc
 
 def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
+    dicc = __canasta_basica__(request, tipo=None, ano_inicial=None, ano_final=None)
+    return render_to_response(template_name, dicc)
+    
+def __canasta_basica__(request, tipo=None, ano_inicial=None, ano_final=None):
     columnas = []
     anos = CanastaBasica.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
     try:
@@ -193,9 +205,13 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
         
     dicc = {'datos':resultados, 'columnas': columnas, 'variaciones': variaciones,
             'tipos_all': tipos_all, 'rango': rango_anos}
-    return render_to_response(template_name, dicc)
+    return dicc
 
 def mercados(request, departamento=None, municipio=None):
+    dicc = __mercados__(request, departamento=None, municipio=None)
+    return render_to_response("economico/mercados.html", dicc)
+
+def __mercados__(request, departamento=None, municipio=None):
     departamentos = Departamento.objects.all()
     if departamento:
         datos = get_list_or_404(Mercado, departamento__id=departamento)
@@ -208,9 +224,13 @@ def mercados(request, departamento=None, municipio=None):
         mensaje="Todos los mercados"
 
     dicc = {'mercados': datos, 'mensaje': mensaje, 'departamentos': departamentos}
-    return render_to_response("economico/mercados.html", dicc)
+    return dicc
 
 def salario_nominal_real(request, ano_inicial=None, ano_final=None):
+    dicc = __salario_nominal_real__(request, ano_inicial=None, ano_final=None)
+    return render_to_response('economico/salario_nominal_real.html', dicc)
+
+def __salario_nominal_real__(request, ano_inicial=None, ano_final=None):
     mes = False
     resultados = [] 
 
@@ -342,4 +362,4 @@ def salario_nominal_real(request, ano_inicial=None, ano_final=None):
     
     dicc = {'datos': resultados, 'variaciones': variaciones,
             'tiene_mes': mes}
-    return render_to_response('economico/salario_nominal_real.html', dicc)
+    return dicc

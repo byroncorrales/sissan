@@ -7,6 +7,10 @@ def index(request):
     pass
 
 def dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
+    dicc = __dependencia_alimentaria__(request, ano_inicial=None, ano_final=None)
+    return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
+
+def __dependencia_alimentaria__(request, ano_inicial=None, ano_final=None):
     productos = Producto.objects.all()
     resultados = []
     try:
@@ -67,9 +71,13 @@ def dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
 
     dicc = {'resultados': resultados, 'variaciones': variaciones, 
             'productos': productos, 'anos': rango_anos, 'productos_all': productos}
-    return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
+    return dicc
 
 def dependencia_alimentaria_producto(request, producto, ano_inicial=None, ano_final=None):
+    dicc = __dependencia_alimentaria_producto__(request, producto, ano_inicial=None, ano_final=None)
+    return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
+
+def __dependencia_alimentaria_producto__(request, producto, ano_inicial=None, ano_final=None):
     producto = get_object_or_404(Producto, slug=producto)
     productos = [producto]
     try:
@@ -122,9 +130,13 @@ def dependencia_alimentaria_producto(request, producto, ano_inicial=None, ano_fi
 
     dicc = {'resultados': resultados, 'variaciones': variaciones, 'anos': rango_anos, 
             'productos': productos, 'productos_all': Producto.objects.all()}
-    return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
+    return dicc
 
 def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departamento=None):
+    dicc = __utilizacion_biologica__(request, ano_inicial=None, ano_final=None, departamento=None)
+    return render_to_response('seguridad_alimentaria/utilizacion_biologica.html', dicc)
+
+def __utilizacion_biologica__(request, ano_inicial=None, ano_final=None, departamento=None):
     departamentos = Departamento.objects.all()
     try:
         anos = UtilizacionBiologica.objects.all().aggregate(ano_minimo = Min('ano'), ano_maximo= Max('ano'))
@@ -188,10 +200,14 @@ def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departament
     variaciones = {'variacion_eda': variacion_eda, 'variacion_ira': variacion_ira}
     dicc = {'datos': datos, 'mensaje': mensaje, 'variaciones': variaciones, 'departamento': tiene_dep,
             'departamentos':departamentos , 'anos':rango_anos }
-    return render_to_response('seguridad_alimentaria/utilizacion_biologica.html', dicc)
+    return dicc
 
 
 def disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
+    dicc = __disponibilidad__(request, ano_inicial=None, ano_final=None, producto=None)
+    return render_to_response('seguridad_alimentaria/disponibilidad.html', dicc)
+
+def __disponibilidad__(request, ano_inicial=None, ano_final=None, producto=None):
     #formula disp = produccion + importaciones + donaciones + exportaciones (dependencia alimentaria)
     #consumo aparente = disp/poblacion
     disponibilidades = []
@@ -266,9 +282,13 @@ def disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
     dicc = {'disponibilidades': disponibilidades, 'consumos': consumos, 
             'productos': productos, 'var_disp': variacion_disp, 'var_consumos': variacion_consumo, 
             'anos': rango_anos, 'productos_all': productos_all}
-    return render_to_response('seguridad_alimentaria/disponibilidad.html', dicc)
+    return dicc
 
 def apertura_comercial(request, ano_inicial=None, ano_final=None):
+    dicc = __apertura_comercial__(request, ano_inicial=None, ano_final=None)
+    return render_to_response('seguridad_alimentaria/apertura_comercial.html', dicc)
+
+def __apertura_comercial__(request, ano_inicial=None, ano_final=None):
     try:
         anos = AperturaComercial.objects.all().aggregate(maximo=Max('ano'), minimo=Min('ano'))
         rango_anos = range(anos['minimo'], anos['maximo']+1)
@@ -309,4 +329,4 @@ def apertura_comercial(request, ano_inicial=None, ano_final=None):
         variacion = 0
 
     dicc = {'resultados': resultados, 'anos': rango_anos, 'variacion': variacion}
-    return render_to_response('seguridad_alimentaria/apertura_comercial.html', dicc)
+    return dicc
