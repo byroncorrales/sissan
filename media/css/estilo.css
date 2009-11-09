@@ -139,7 +139,7 @@ h2 {
 
 /* --------------Comienza contenido--------------- */
 #contenido{
-	width:956px;
+	min-width:956px;
 	!width:960px;
 	min-height:350px;
 	border-style:solid;
