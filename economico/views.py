@@ -1,8 +1,10 @@
 from django.shortcuts import render_to_response, get_object_or_404, get_list_or_404
 from models import *
-from utils import convertir_mes
+from resources import convertir_mes
 from django.template.defaultfilters import slugify
 from django.db.models import Avg, Min, Max, Sum
+from utils.pygooglechart import SimpleLineChart
+from utils import grafos
 #from forms import AnoFilterForm
 
 def index(request):
@@ -11,6 +13,35 @@ def index(request):
 def salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
     dicc = __salario_minimo__(request, ano_inicial, ano_final, sector)
     return render_to_response('economico/salario_minimo.html', dicc)
+
+def grafo_salario_minimo(request, ano_inicial=None, ano_final=None, sector=None):
+    #grafico de lineas
+    dicc = __salario_minimo__(request, ano_inicial, ano_final, sector)
+    legends = [sector.nombre for sector in dicc['sectores']]
+    message = 'Grafico de Salario Minimo'
+    
+    rows_2_column = []
+    for sector in dicc['sectores']:
+        rows_2_column.append([])
+
+    for row in dicc['datos']:
+        for i in range(len(row['datos'])):
+            rows_2_column[i].append(float(row['datos'][i]))
+    
+    data = [row for row in rows_2_column]
+    
+    if not dicc['tiene_mes']:
+        if ano_inicial and ano_final:
+            axis = range(int(ano_inicial), int(ano_final)+1)
+        elif ano_inicial:
+            axis=ano_inicial
+        else:
+            axis = dicc['rango']
+    else:
+        axis = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago',
+                'Sep', 'Oct', 'Nov', 'Dic']
+
+    return grafos.make_graph(data, legends, message, axis, type=SimpleLineChart, multiline=True)
     
 def __salario_minimo__(request, ano_inicial=None, ano_final=None, sector=None):
     rango = SalarioMinimo.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
@@ -141,6 +172,35 @@ def canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
     template_name = dicc['template']
     del(dicc['template'])
     return render_to_response(template_name, dicc)
+
+def grafo_canasta_basica(request, tipo=None, ano_inicial=None, ano_final=None):
+    dicc = __canasta_basica__(request, tipo, ano_inicial, ano_final)
+    legends = dicc['columnas'] 
+    message = 'Grafico de Canasta Basica'
+    
+    rows_2_column = []
+    for sector in dicc['columnas']:
+        rows_2_column.append([])
+
+    for row in dicc['datos']:
+        for i in range(len(row['datos'])):
+            try:
+                rows_2_column[i].append(float(row['datos'][i]))
+            except:
+                rows_2_column[i].append(0)
+    
+    data = [row for row in rows_2_column]
+    
+    if ano_inicial and ano_final:
+        axis = range(int(ano_inicial), int(ano_final)+1)
+    elif ano_inicial:
+        axis=ano_inicial
+    else:
+        axis = dicc['rango']
+        #axis = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago',
+        #        'Sep', 'Oct', 'Nov', 'Dic']
+
+    return grafos.make_graph(data, legends, message, axis, type=SimpleLineChart, multiline=True)
     
 def __canasta_basica__(request, tipo=None, ano_inicial=None, ano_final=None):
     columnas = []
