@@ -35,23 +35,24 @@
 {{mensaje}}
 <table>
     <tr>
-        <td>
+        <th class="sortable-numeric">
             Año
-        </td>
-        <td>
+        </th>
+        <th class="sortable-numeric">
             Tasa
-        </td>
+        </th>
     </tr>
     {%for dato in resultados reversed%}
     <tr>
-        <td>
-            <a href="/seguridad-alimentaria/apertura-comercial/{{dato.ano}}"/> {{dato.ano}} </a>
+        <td class="{% cycle alt, none%}">
+            <a href="/seguridad-alimentaria/apertura-comercial/{{dato.ano}}"/>{{dato.ano}} </a>
         </td>
-        <td>
+        <td class="{% cycle alt, none%}">
             {{dato.tasa|floatformat:2}}
         </td>
     </tr>
     {%endfor%}
+    <tfoot>
     <tr>
         <td>
             Variación
@@ -60,5 +61,6 @@
             {{variacion|floatformat:2}}%
         </td>
     </tr>
+</tfoot>
 </table>
 {% endblock %}

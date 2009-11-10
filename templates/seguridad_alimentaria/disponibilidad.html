@@ -55,13 +55,13 @@
 {{mensaje}}
 <table>
     <tr>
-        <td>
+        <th class="sortable-numeric">
             Año
-        </td>
+        </th>
         {%for producto in productos%}
-        <td>
+        <th class="sortable-numeric">
             {{producto.nombre}}
-        </td>
+        </th>
         {%endfor%}
     </tr>
     <tr>
@@ -71,11 +71,11 @@
     </tr>
     {%for dato in disponibilidades reversed%}
     <tr>
-        <td>
+        <td class="{% cycle alt, none%}">
             <a href="/seguridad-alimentaria/disponibilidad/{{dato.ano}}"/> {{dato.ano}} </a>
         </td>
         {%for numero in dato.datos%}
-        <td>
+        <td class="{% cycle alt, none%}">
             {{numero}}
         </td>
         {%endfor%}

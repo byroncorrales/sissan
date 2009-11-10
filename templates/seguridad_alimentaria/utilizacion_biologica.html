@@ -54,39 +54,40 @@
 {{mensaje}}
 <table>
     <tr>
-        <td>
+        <th class="sortable-numeric">
             Año
-        </td>
+        </th>
         {% if departamento %}
         <td>
           Departamento 
         </td>
         {% endif %}
-        <td>
+        <th class="sortable-numeric">
           Enfermedades diarreicas agudas 
-        </td>
-        <td>
+        </th>
+        <th class="sortable-numeric">
           Enfermedades respiratorias agudas
-        </td>
+        </th>
     </tr>
     {%for dato in datos%}
     <tr>
-        <td>
+        <td class="{% cycle alt, none%}">
             {{dato.ano}}
         </td>
         {% if departamento %}
-        <td>
+        <td class="{% cycle alt, none%}">
             <a href="/seguridad-alimentaria/utilizacion-biologica/{{dato.departamento.slug}}/">{{dato.departamento.nombre}}</a>
         </td>
         {% endif %}
-        <td>
+        <td class="{% cycle alt, none%}">
             {{dato.enfermedades_diarreicas}}
         </td>
-        <td>
+        <td class="{% cycle alt, none%}">
             {{dato.enfermedades_respiratorias}}
         </td>
     </tr>
     {%endfor%}
+    <tfoot>
     <tr>
         {%if departamento%}
         <td colspan="2">
@@ -101,5 +102,7 @@
         <td>
             {{variaciones.variacion_ira|floatformat:2}}%
         </td>
+    </tr>
+    </tfoot>
 </table>
 {% endblock %}

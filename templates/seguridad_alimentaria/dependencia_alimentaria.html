@@ -55,27 +55,28 @@
 {{mensaje}}
 <table>
     <tr>
-        <td>
+        <th class="sortable-numeric">
             Año
-        </td>
+        </th>
         {%for producto in productos%}
-        <td>
+        <th class="sortable-numeric">
             {{producto.nombre}}
-        </td>
+        </th>
         {%endfor%}
     </tr>
     {%for dato in resultados reversed%}
     <tr>
-        <td>
+        <td class="{% cycle alt, none%}">
             <a href="/seguridad-alimentaria/dependencia-alimentaria/{{dato.ano}}"/> {{dato.ano}} </a>
         </td>
         {%for numero in dato.datos%}
-        <td>
+        <td class="{% cycle alt, none%}">
             {{numero}}
         </td>
         {%endfor%}
     </tr>
     {%endfor%}
+    <tfoot>
     <tr>
         <td>
             Variación
@@ -85,5 +86,7 @@
             {{variacion}}%
         </td>
         {%endfor%}
+    </tr>
+    </tfoot>
 </table>
 {% endblock %}
