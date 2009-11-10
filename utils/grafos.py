@@ -122,7 +122,11 @@ def __line_strip_graphic__(data, legends, axis_labels, size, steps,
         chart.add_data(data)
     
     step = ((max_y*1.05)-(min_y*0.95))/steps
-    left_axis = range(int(min_y*0.95), int(max_y*1.05), int(step))
+    try:
+        left_axis = range(int(min_y*0.95), int(max_y*1.05), int(step))
+    except ValueError:
+        #error por que los range no soportan decimales
+        left_axis = range(0, 2)
     left_axis[0]=''
     chart.set_axis_labels(Axis.LEFT, left_axis)
     chart.set_colours([ 'FFBC13','22A410','E6EC23','2B2133','BD0915','3D43BD'])
