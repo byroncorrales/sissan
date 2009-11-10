@@ -77,7 +77,7 @@ class AperturaComercial(models.Model):
     ano = models.IntegerField("Ano", max_length=4, choices=ANO_CHOICES, unique=True)
     pib = models.DecimalField("PIB", decimal_places=2, max_digits=10)
     exportaciones = models.DecimalField("Exportaciones", decimal_places=2, max_digits=10)
-    importaciones = models.DecimalField("Exportaciones", decimal_places=2, max_digits=10)
+    importaciones = models.DecimalField("Importaciones", decimal_places=2, max_digits=10)
 
     def __unicode__(self):
         return "Apertura Comercial (%s)" % self.ano

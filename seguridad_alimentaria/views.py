@@ -1,6 +1,8 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.db.models import Sum, Max, Min
 from demografico.models import Poblacion
+from utils import grafos
+from utils.pygooglechart import SimpleLineChart
 from models import *
 
 def index(request):
@@ -9,6 +11,30 @@ def index(request):
 def dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
     dicc = __dependencia_alimentaria__(request, ano_inicial, ano_final)
     return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
+
+def grafo_dependencia_alimentaria(request, ano_inicial=None, ano_final=None):
+    dicc = __dependencia_alimentaria__(request, ano_inicial, ano_final)
+    rows_2_column = []
+    
+    for producto in dicc['productos']:
+        rows_2_column.append([])
+
+    for row in dicc['resultados']:
+        for i in range(len(row['datos'])):
+            rows_2_column[i].append(float(row['datos'][i]))
+
+    data = [row for row in rows_2_column]
+    legends = [producto.nombre for producto in dicc['productos']]
+    message = "Dependencia Alimentaria"
+
+    if ano_inicial and ano_final:
+        axis = range(int(ano_inicial), int(ano_final)+1)
+    elif ano_inicial:
+        axis = ano_inicial
+    else:
+        axis = dicc['anos']
+
+    return grafos.make_graph(data, legends, message, axis, type=SimpleLineChart, multiline=True)
 
 def __dependencia_alimentaria__(request, ano_inicial=None, ano_final=None):
     productos = Producto.objects.all()
@@ -77,6 +103,30 @@ def dependencia_alimentaria_producto(request, producto, ano_inicial=None, ano_fi
     dicc = __dependencia_alimentaria_producto__(request, producto, ano_inicial, ano_final)
     return render_to_response("seguridad_alimentaria/dependencia_alimentaria.html", dicc)
 
+def grafo_dependencia_alimentaria_producto(request, producto, ano_inicial=None, ano_final=None):
+    dicc = __dependencia_alimentaria_producto__(request, producto, ano_inicial, ano_final)
+    rows_2_column = []
+    
+    for producto in dicc['productos']:
+        rows_2_column.append([])
+
+    for row in dicc['resultados']:
+        for i in range(len(row['datos'])):
+            rows_2_column[i].append(float(row['datos'][i]))
+
+    data = [row for row in rows_2_column]
+    legends = [producto.nombre for producto in dicc['productos']]
+    message = "Dependencia Alimentaria"
+
+    if ano_inicial and ano_final:
+        axis = range(int(ano_inicial), int(ano_final)+1)
+    elif ano_inicial:
+        axis = ano_inicial
+    else:
+        axis = dicc['anos']
+
+    return grafos.make_graph(data, legends, message, axis, type=SimpleLineChart, multiline=True)
+
 def __dependencia_alimentaria_producto__(request, producto, ano_inicial=None, ano_final=None):
     producto = get_object_or_404(Producto, slug=producto)
     productos = [producto]
@@ -136,6 +186,29 @@ def utilizacion_biologica(request, ano_inicial=None, ano_final=None, departament
     dicc = __utilizacion_biologica__(request, ano_inicial, ano_final, departamento)
     return render_to_response('seguridad_alimentaria/utilizacion_biologica.html', dicc)
 
+def grafo_utilizacion_biologica(request, ano_inicial=None, ano_final=None, departamento=None):
+    dicc = __utilizacion_biologica__(request, ano_inicial, ano_final, departamento)
+    if not dicc['departamento']:
+        enfermedades_diarreicas = [float(foo['enfermedades_diarreicas']) for foo in dicc['datos']]
+        enfermedades_respiratorias= [float(foo['enfermedades_respiratorias']) for foo in dicc['datos']]
+    else:
+        enfermedades_diarreicas = [float(foo.enfermedades_diarreicas) for foo in dicc['datos']]
+        enfermedades_respiratorias= [float(foo.enfermedades_respiratorias) for foo in dicc['datos']]
+
+    data = [enfermedades_diarreicas, enfermedades_respiratorias]
+    legends = ['Enfermedades Diarreicas', 'Enfermedades Respiratorias']
+
+    message = 'Utilizacion Biologica'
+
+    if ano_inicial and ano_final:
+        axis = range(int(ano_inicial), int(ano_final)+1)
+    elif ano_inicial:
+        axis=ano_inicial
+    else:
+        axis = dicc['anos']
+
+    return grafos.make_graph(data, legends, message, axis, type=SimpleLineChart, multiline=True)
+
 def __utilizacion_biologica__(request, ano_inicial=None, ano_final=None, departamento=None):
     departamentos = Departamento.objects.all()
     try:
@@ -163,7 +236,7 @@ def __utilizacion_biologica__(request, ano_inicial=None, ano_final=None, departa
         datos = []
         tiene_dep=False
         if ano_inicial and ano_final:
-            for ano in range(ano_inicial, ano_final+1):
+            for ano in range(int(ano_inicial), int(ano_final)+1):
                 resultado = UtilizacionBiologica.objects.filter(ano=ano).aggregate(
                     enfermedades_diarreicas=Sum('enfermedades_diarreicas'), 
                     enfermedades_respiratorias=Sum('enfermedades_respiratorias'))
@@ -287,6 +360,22 @@ def __disponibilidad__(request, ano_inicial=None, ano_final=None, producto=None)
 def apertura_comercial(request, ano_inicial=None, ano_final=None):
     dicc = __apertura_comercial__(request, ano_inicial, ano_final)
     return render_to_response('seguridad_alimentaria/apertura_comercial.html', dicc)
+
+def grafo_apertura_comercial(request, ano_inicial=None, ano_final=None):
+    dicc = __apertura_comercial__(request, ano_inicial, ano_final)
+    if ano_inicial and ano_final:
+        axis = range(int(ano_inicial), int(ano_final)+1)
+    elif ano_inicial:
+        axis=ano_inicial
+    else:
+        axis = dicc['anos']
+
+    data = [float(foo['tasa']) for foo in dicc['resultados']]
+    print data
+    message = 'Apertura Comercial'
+    legends = ["tasa apertura comercial"]
+
+    return grafos.make_graph(data, legends, message, axis, type=SimpleLineChart) 
 
 def __apertura_comercial__(request, ano_inicial=None, ano_final=None):
     try:
