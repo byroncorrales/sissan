@@ -1,4 +1,6 @@
 from django.shortcuts import render_to_response, get_object_or_404
+from django.utils import simplejson
+from django.http import HttpResponse
 from django.db.models import Sum, Max, Min
 from demografico.models import Poblacion
 from utils import grafos
@@ -280,6 +282,50 @@ def disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
     dicc = __disponibilidad__(request, ano_inicial, ano_final, producto)
     return render_to_response('seguridad_alimentaria/disponibilidad.html', dicc)
 
+def grafo_disponibilidad(request, ano_inicial=None, ano_final=None, producto=None):
+    dicc = __disponibilidad__(request, ano_inicial, ano_final, producto)
+
+    if ano_inicial and ano_final:
+        axis = range(int(ano_inicial), int(ano_final)+1)
+    elif ano_inicial:
+        axis = ano_inicial
+    else:
+        axis = dicc['anos']
+
+    rows_2_column = []
+    #Para los consumos
+    for producto in dicc['productos']:
+        rows_2_column.append([])
+
+    for row in dicc['consumos']:
+        for i in range(len(row['datos'])):
+            rows_2_column[i].append(float(row['datos'][i]))
+
+    data = [row for row in rows_2_column]
+    legends = [producto.nombre for producto in dicc['productos']]
+    message = "Dependencia Alimentaria"
+    url_grafo_consumos = grafos.make_graph(data, legends, message, axis, 
+                                           type=SimpleLineChart, multiline=True, return_json=False)
+
+    ##Para las disponibilidades
+    rows_2_column = []
+    for producto in dicc['productos']:
+        rows_2_column.append([])
+
+    for row in dicc['disponibilidades']:
+        for i in range(len(row['datos'])):
+            rows_2_column[i].append(float(row['datos'][i]))
+
+    data = [row for row in rows_2_column]
+    legends = [producto.nombre for producto in dicc['productos']]
+    message = "Dependencia Alimentaria"
+    url_grafo_disponibilidades = grafos.make_graph(data, legends, message, axis, 
+                                                   type=SimpleLineChart, multiline=True, return_json=False)
+
+    json_dicc = {'url_consumos': url_grafo_consumos, 'url_disponibilidades': url_grafo_disponibilidades}
+
+    return HttpResponse(simplejson.dumps(json_dicc), mimetype="application/javascript")
+
 def __disponibilidad__(request, ano_inicial=None, ano_final=None, producto=None):
     #formula disp = produccion + importaciones + donaciones + exportaciones (dependencia alimentaria)
     #consumo aparente = disp/poblacion
@@ -299,25 +345,25 @@ def __disponibilidad__(request, ano_inicial=None, ano_final=None, producto=None)
         productos = productos_all 
     if ano_inicial and ano_final:
         for ano in range(int(ano_inicial), int(ano_final)+1):
-            poblacion = Poblacion.objects.get(ano=ano)
+            poblacion = Poblacion.objects.filter(ano=ano).aggregate(total=Sum('total_ambos_sexos'))
             fila_disp = {'ano': ano, 'datos': []}
             fila_consumo = {'ano': ano, 'datos': []}
             for producto in productos:
                 dependencia = DependenciaAlimentaria.objects.get(ano=ano, producto=producto)
                 disponibilidad = dependencia.produccion + dependencia.importaciones + dependencia.donaciones - dependencia.exportaciones
-                consumo_aparente = disponibilidad/poblacion.total_ambos_sexos 
+                consumo_aparente = disponibilidad/poblacion['total']
                 fila_disp['datos'].append(disponibilidad)
                 fila_consumo['datos'].append("%.2f" % consumo_aparente)
             disponibilidades.append(fila_disp)
             consumos.append(fila_consumo)
     elif ano_inicial:
-        poblacion = Poblacion.objects.get(ano=ano_inicial)
+        poblacion = Poblacion.objects.filter(ano=ano_inicial).aggregate(total=Sum('total_ambos_sexos'))
         fila_disp = {'ano': ano_inicial, 'datos': []}
         fila_consumo = {'ano': ano_inicial, 'datos': []}
         for producto in productos:
             dependencia = DependenciaAlimentaria.objects.get(ano=ano_inicial, producto=producto)
             disponibilidad = dependencia.produccion + dependencia.importaciones + dependencia.donaciones - dependencia.exportaciones
-            consumo_aparente = disponibilidad/poblacion.total_ambos_sexos 
+            consumo_aparente = disponibilidad/poblacion['total']
             fila_disp['datos'].append(disponibilidad)
             fila_consumo['datos'].append("%.2f" % consumo_aparente)
         disponibilidades.append(fila_disp)
@@ -325,13 +371,13 @@ def __disponibilidad__(request, ano_inicial=None, ano_final=None, producto=None)
     else:
         try:
             for ano in rango_anos:
-                poblacion = Poblacion.objects.get(ano=ano)
+                poblacion = Poblacion.objects.filter(ano=ano).aggregate(total=Sum('total_ambos_sexos'))
                 fila_disp = {'ano': ano, 'datos': []}
                 fila_consumo = {'ano': ano, 'datos': []}
                 for producto in productos:
                     dependencia = DependenciaAlimentaria.objects.get(ano=ano, producto=producto)
                     disponibilidad = dependencia.produccion + dependencia.importaciones + dependencia.donaciones - dependencia.exportaciones
-                    consumo_aparente = disponibilidad/poblacion.total_ambos_sexos 
+                    consumo_aparente = disponibilidad/poblacion['total']
                     fila_disp['datos'].append(disponibilidad)
                     fila_consumo['datos'].append("%.2f" % consumo_aparente)
                 disponibilidades.append(fila_disp)
@@ -371,7 +417,6 @@ def grafo_apertura_comercial(request, ano_inicial=None, ano_final=None):
         axis = dicc['anos']
 
     data = [float(foo['tasa']) for foo in dicc['resultados']]
-    print data
     message = 'Apertura Comercial'
     legends = ["tasa apertura comercial"]
 

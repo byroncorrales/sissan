@@ -39,6 +39,13 @@ urlpatterns = patterns('seguridad_alimentaria.views',
                         (r'^disponibilidad/(?P<ano_inicial>\d{4})/(?P<producto>\w+)/$', 'disponibilidad'),
                         (r'^disponibilidad/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/(?P<producto>\w+)/$', 'disponibilidad'),
                         (r'^disponibilidad/(?P<producto>\w+)/$', 'disponibilidad'),
+                        #grafos disponibilidad
+                        (r'^grafo/disponibilidad/$', 'grafo_disponibilidad'),
+                        (r'^grafo/disponibilidad/(?P<ano_inicial>\d{4})/$', 'grafo_disponibilidad'),
+                        (r'^grafo/disponibilidad/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/$', 'grafo_disponibilidad'),
+                        (r'^grafo/disponibilidad/(?P<ano_inicial>\d{4})/(?P<producto>\w+)/$', 'grafo_disponibilidad'),
+                        (r'^grafo/disponibilidad/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/(?P<producto>\w+)/$', 'grafo_disponibilidad'),
+                        (r'^grafo/disponibilidad/(?P<producto>\w+)/$', 'grafo_disponibilidad'),
                         #Apertura comercial
                         (r'^apertura-comercial/$', 'apertura_comercial'),
                         (r'^apertura-comercial/(?P<ano_inicial>\d{4})/$', 'apertura_comercial'),
