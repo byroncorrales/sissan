@@ -42,4 +42,8 @@ urlpatterns = patterns('economico.views',
                         (r'^economico/salario-nominal-real/$', 'salario_nominal_real'),
                         (r'^economico/salario-nominal-real/(?P<ano_inicial>\d{4})/$', 'salario_nominal_real'),
                         (r'^economico/salario-nominal-real/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/$', 'salario_nominal_real'),
+                        #grafo salario nominal real
+                        (r'^economico/grafo/salario-nominal-real/$', 'grafo_salario_nominal_real'),
+                        (r'^economico/grafo/salario-nominal-real/(?P<ano_inicial>\d{4})/$', 'grafo_salario_nominal_real'),
+                        (r'^economico/grafo/salario-nominal-real/(?P<ano_inicial>\d{4})-(?P<ano_final>\d{4})/$', 'grafo_salario_nominal_real'),
                        )

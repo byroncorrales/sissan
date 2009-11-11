@@ -5,6 +5,8 @@ from django.template.defaultfilters import slugify
 from django.db.models import Avg, Min, Max, Sum
 from utils.pygooglechart import SimpleLineChart
 from utils import grafos
+from django.utils import simplejson
+from django.http import HttpResponse
 #from forms import AnoFilterForm
 
 def index(request):
@@ -290,11 +292,82 @@ def __mercados__(request, departamento=None, municipio=None):
 
 def salario_nominal_real(request, ano_inicial=None, ano_final=None):
     dicc = __salario_nominal_real__(request, ano_inicial, ano_final)
+    print dicc
     return render_to_response('economico/salario_nominal_real.html', dicc)
+
+def grafo_salario_nominal_real(request, ano_inicial=None, ano_final=None):
+    dicc = __salario_nominal_real__(request, ano_inicial, ano_final)
+    rows_nominal = [[],[],[]]
+    rows_real = [[],[],[]]
+    
+    legends = ['Gobierno Central', 'Salario Nacional', 'Asegurados INSS']
+
+    if not dicc['tiene_mes']:
+        if ano_inicial and ano_final:
+            axis = range(int(ano_inicial), int(ano_final)+1)
+        elif ano_inicial:
+            axis=ano_inicial
+        else:
+            axis = dicc['anos']
+    else:
+        axis = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago',
+                'Sep', 'Oct', 'Nov', 'Dic']
+
+    for row in dicc['datos']:
+        for i in range(0,3):
+            try:
+                rows_nominal[i].append(float(row['datos'][i]))
+            except:
+                rows_nominal[i].append(0)
+            try:
+                rows_real[i].append(float(row['datos'][i+3]))
+            except:
+                rows_real[i].append(0)
+    
+    data_nominal = [row for row in rows_nominal]
+    data_real = [row for row in rows_real]
+    
+    message = "Salario Nominal"
+    try:
+        url_nominal = grafos.make_graph(data_nominal, legends, message, 
+                                        axis, type=SimpleLineChart, multiline=True, return_json=False)
+    except:
+        url_nominal=None
+    message = "Salario Real"
+    try:
+        url_real= grafos.make_graph(data_real, legends, message,
+                                    axis, type=SimpleLineChart, multiline=True, return_json=False)
+    except:
+        url_real = None
+
+    json_dicc = {'url_nominal': url_nominal, 'url_real': url_real}
+    return HttpResponse(simplejson.dumps(json_dicc), mimetype="application/javascript")
 
 def __salario_nominal_real__(request, ano_inicial=None, ano_final=None):
     mes = False
     resultados = [] 
+
+    rango_nominal = SalarioNominal.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
+    rango_real = SalarioNominal.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
+    rango = {'minimo':0, 'maximo':0}
+
+    if rango_nominal['minimo'] == None and rango_nominal['maximo']==None:
+        rango_nominal={'minimo': 0, 'maximo': 0}
+    if rango_real['minimo'] == None and rango_real['maximo']==None:
+        rango_real={'minimo': 0, 'maximo': 0}
+
+    if rango_nominal['minimo']<=rango_real['minimo']:
+        rango['minimo']=rango_nominal['minimo']
+    else:
+        rango['minimo']=rango_real['minimo']
+
+    if rango_nominal['maximo']<=rango_real['maximo']:
+        rango['maximo']=rango_nominal['maximo']
+    else:
+        rango['maximo']=rango_real['maximo']
+    
+    rango_anos = range(rango['minimo'], rango['maximo']+1)
+
 
     if ano_inicial and ano_final:
         for ano in range(int(ano_inicial), int(ano_final)+1):
@@ -357,26 +430,7 @@ def __salario_nominal_real__(request, ano_inicial=None, ano_final=None):
             temp = dict.copy(fila)
             resultados.append(temp)
     else:
-        rango_nominal = SalarioNominal.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
-        rango_real = SalarioNominal.objects.all().aggregate(minimo=Min('ano'), maximo=Max('ano'))
-        rango = {'minimo':0, 'maximo':0}
-
-        if rango_nominal['minimo'] == None and rango_nominal['maximo']==None:
-            rango_nominal={'minimo': 0, 'maximo': 0}
-        if rango_real['minimo'] == None and rango_real['maximo']==None:
-            rango_real={'minimo': 0, 'maximo': 0}
-
-        if rango_nominal['minimo']<=rango_real['minimo']:
-            rango['minimo']=rango_nominal['minimo']
-        else:
-            rango['minimo']=rango_real['minimo']
-
-        if rango_nominal['maximo']<=rango_real['maximo']:
-            rango['maximo']=rango_nominal['maximo']
-        else:
-            rango['maximo']=rango_real['maximo']
-        
-        for ano in range(rango['minimo'], rango['maximo']+1):
+        for ano in rango_anos: 
             fila = {'ano':ano ,'datos': []}
             try:
                 salario_nominal = SalarioNominal.objects.filter(ano=ano).aggregate(asegurados=Avg('asegurados_inss'), 
@@ -423,5 +477,5 @@ def __salario_nominal_real__(request, ano_inicial=None, ano_final=None):
             variaciones.append(variacion)
     
     dicc = {'datos': resultados, 'variaciones': variaciones,
-            'tiene_mes': mes}
+            'tiene_mes': mes, 'anos': rango_anos}
     return dicc
