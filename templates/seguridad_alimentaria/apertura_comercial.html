@@ -1,4 +1,29 @@
 {% extends 'base.html' %}
+{%block extrahead%}
+<script type="text/javascript">
+$(document).ready(function(){
+var flip = 0;
+var cadena = window.location.pathname.split("/");
+var tope = cadena.length - 2;
+var parametros = '/';
+for(i=3; i<=tope; i++)
+{
+    parametros+= cadena[i] + "/";
+}
+var url = "/" + cadena[1] + "/grafo/" + cadena[2] + parametros;
+$("#boton-grafo").click(function () { 
+    $.getJSON(url, 
+       function(data){
+           if(flip++ % 2 == 0){
+               $("#grafo").replaceWith('<div id="grafo"><img src="' + data.url + '" /></div>');
+           }else{
+               $("#grafo").replaceWith('<div id="grafo"></div>');
+           }
+       });
+   });   
+});
+</script>
+{%endblock%}
 {% block contenido %}
 <script type="text/javascript">
     function procesarFormulario(form){
@@ -32,6 +57,8 @@
     </select>
     <input type="button" value="Filtrar" onClick="procesarFormulario(this.form)"/>
 </form>
+<div id="boton-grafo"><a href="#">Gráfico</a></div>
+<div id="grafo"></div>
 {{mensaje}}
 <table>
     <tr>
