@@ -9,10 +9,12 @@
     <script type='text/javascript' src='/js/jquery-ui-1.7.2.custom.min.js'></script>
 	<script type='text/javascript' src='/js/tablesort.js'></script>	
 	<script type='text/javascript' src='/js/niceforms.js'></script>	
+	{%block extrahead%}{%endblock%}
 	<script type="text/javascript">
 			$(function(){
 				// Tabs
 				$('#tabs').tabs();
+                $('#tabs').tabs('select', {%block tab%}{%endblock%});
 				//hover states on the static widgets
 				$('#dialog_link, ul#icons li').hover(
 					function() { $(this).addClass('ui-state-hover'); }, 
@@ -20,7 +22,6 @@
 				);
 			});
 		</script>
-	{%block extrahead%}{%endblock%}
 </head>
 <body>	 
 		<div id="contenedor" class="centro">
