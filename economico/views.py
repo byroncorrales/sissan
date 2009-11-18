@@ -127,22 +127,20 @@ def empleo(resquest, ano_inicial=None, ano_final=None):
     return render_to_response("economico/empleo.html", dicc)
     
 def __empleo__(resquest, ano_inicial=None, ano_final=None):
-    anos = []
     anos = FuerzaTrabajo.objects.all().aggregate(minimo = Min('ano'), maximo = Max('ano'))
     try:
-        rango_anos = range(rango_anos['minimo'], rango_anos['maximo']+1)
+        rango_anos = range(int(anos['minimo']), int(anos['maximo'])+1)
     except:
         rango_anos = None
+
     if ano_inicial and ano_final:
         #rango de aos
         datos = FuerzaTrabajo.objects.filter(ano__range=(ano_inicial, ano_final))
-        anos = range(int(ano_inicial), int(ano_final)+1)
         mensaje = 'Empleo (%s-%s)'  % (ano_inicial, ano_final)
     elif ano_inicial:
         #ano especifico
         datos = FuerzaTrabajo.objects.filter(ano=ano_inicial)
-        anos.append(ano_inicial)
-        mensaje = 'Empleo (%s)'
+        mensaje = 'Empleo (%s)' % ano_inicial
     else:
         #todos los anos
         #sacar ano max y ano min!
@@ -292,7 +290,6 @@ def __mercados__(request, departamento=None, municipio=None):
 
 def salario_nominal_real(request, ano_inicial=None, ano_final=None):
     dicc = __salario_nominal_real__(request, ano_inicial, ano_final)
-    print dicc
     return render_to_response('economico/salario_nominal_real.html', dicc)
 
 def grafo_salario_nominal_real(request, ano_inicial=None, ano_final=None):
