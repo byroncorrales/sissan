@@ -56,14 +56,14 @@ $("#boton-grafo-real").click(function () {
     Año Inicial:
     <select name="ano_inicial" id="id_ano_inicial">
         <option value="">-------</option>
-        {%for ano in rango%}
+        {%for ano in anos%}
         <option value="{{ano}}">{{ano}}</option>
         {%endfor%}
     </select>
     Año Final:
     <select name="ano_final" id="id_ano_final">
         <option value="">-------</option>
-        {%for ano in rango reversed%}
+        {%for ano in anos reversed%}
         <option value="{{ano}}">{{ano}}</option>
         {%endfor%}
     </select>
@@ -72,6 +72,7 @@ $("#boton-grafo-real").click(function () {
 <div id="boton-grafo-real"><a href="#">Gráfico Salario Mínimo Nominal</a></div>
 <div id="boton-grafo-nominal"><a href="#">Gráfico Salario Mínimo Real</a></div>
 <div id="grafo-nominal"></div>
+<br/>
 <div id="grafo-real"></div>
 <table>
     <tr>
@@ -96,6 +97,10 @@ $("#boton-grafo-real").click(function () {
     <tr>
         <td>
         </td>
+        {%if tiene_mes%}
+        <td>
+        </td>
+        {%endif%}
         <th class="sortable-numeric">
             Asegurados INSS
         </th>

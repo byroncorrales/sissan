@@ -407,23 +407,42 @@ def __salario_nominal_real__(request, ano_inicial=None, ano_final=None):
             fila['mes'] = convertir_mes(i)
             fila['datos']=[]
             try:
-                dato = SalarioNominal.objects.get(ano=ano_inicial, mes=i)
-                fila['datos'].append(dato.asegurados_inss)
-                fila['datos'].append(dato.gobierno_central)
-                fila['datos'].append(dato.salario_nacional)
+                dato_nominal = SalarioNominal.objects.get(ano=ano_inicial, mes=i)
+                fila['datos'].append(dato_nominal.asegurados_inss)
+                fila['datos'].append(dato_nominal.gobierno_central)
+                fila['datos'].append(dato_nominal.salario_nacional)
             except:
+                dato_nominal=None
                 fila['datos'].append(0)
                 fila['datos'].append(0)
                 fila['datos'].append(0)
             try:
-                dato = SalarioReal.objects.get(ano=ano_inicial, mes=i)
-                fila['datos'].append(dato.asegurados_inss)
-                fila['datos'].append(dato.gobierno_central)
-                fila['datos'].append(dato.salario_nacional)
+                dato_real = SalarioReal.objects.get(ano=ano_inicial, mes=i)
+                fila['datos'].append(dato_real.asegurados_inss)
+                fila['datos'].append(dato_real.gobierno_central)
+                fila['datos'].append(dato_real.salario_nacional)
+            except:
+                dato_real = None
+                fila['datos'].append(0)
+                fila['datos'].append(0)
+                fila['datos'].append(0)
+            #variaciones
+            try:
+                variacion_inss = ((dato_nominal.asegurados_inss - dato_real.asegurados_inss)/dato_nominal.asegurados_inss)*100
+                fila['datos'].append(variacion_inss)
             except:
                 fila['datos'].append(0)
+            try:
+                variacion_central= ((dato_nominal.gobierno_central- dato_real.asegurados_inss)/dato_nominal.asegurados_inss)*100
+                fila['datos'].append(variacion_central)
+            except:
                 fila['datos'].append(0)
+            try:
+                variacion_nacional= ((dato_nominal.salario_nacional- dato_real.salario_nacional)/dato_nominal.salario_nacional)*100
+                fila['datos'].append(variacion_nacional)
+            except:
                 fila['datos'].append(0)
+            
             temp = dict.copy(fila)
             resultados.append(temp)
     else:
