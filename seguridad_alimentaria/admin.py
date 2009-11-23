@@ -4,11 +4,11 @@ from seguridad_alimentaria.models import *
 class ProductoAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("nombre",)}
 class SoberaniaAlimentariaAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['ano', 'producto']
 class UtilizacionBiologicaAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['ano', 'departamento']
 class DependenciaAlimentariaAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['producto', 'ano']
 class AperturaComercialAdmin(admin.ModelAdmin):
     pass
 

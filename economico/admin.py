@@ -2,19 +2,19 @@ from django.contrib import admin
 from economico.models import *
 
 class MercadoAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['departamento']
 class SectorAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("nombre",)}
 class CanastaBasicaAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['ano', 'tipo']
 class SalarioNominalAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['ano']
 class SalarioRealAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['ano']
 class SalarioMinimoAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['ano']
 class FuerzaTrabajoAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['ano']
 class TipoCanastaBasicaAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("tipo",)}
 
